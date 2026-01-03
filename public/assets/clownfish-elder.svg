@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5500"/>
+      <stop offset="50%" style="stop-color:#E64A00"/>
+      <stop offset="100%" style="stop-color:#B33600"/>
+    </linearGradient>
+    <linearGradient id="finGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8844"/>
+      <stop offset="100%" style="stop-color:#FF5500"/>
+    </linearGradient>
+    <linearGradient id="stripeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFFFFF"/>
+      <stop offset="50%" style="stop-color:#FFFEF0"/>
+      <stop offset="100%" style="stop-color:#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="goldShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,215,0,0.3)"/>
+      <stop offset="50%" style="stop-color:rgba(255,215,0,0)"/>
+      <stop offset="100%" style="stop-color:rgba(255,215,0,0.2)"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.5"/>
+    </filter>
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  
+  <!-- Majestic tail fin -->
+  <path d="M 8 60 Q -8 30 12 18 Q 35 38 35 60 Q 35 82 12 102 Q -8 90 8 60 Z" fill="url(#finGrad)" filter="url(#shadow)"/>
+  <path d="M 18 35 L 25 60 L 18 85" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/>
+  <path d="M 12 45 L 20 60 L 12 75" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Main body - elder is more robust -->
+  <ellipse cx="100" cy="60" rx="72" ry="46" fill="url(#bodyGrad)" filter="url(#shadow)"/>
+  
+  <!-- Golden shine overlay for elder status -->
+  <ellipse cx="100" cy="60" rx="72" ry="46" fill="url(#goldShine)"/>
+  
+  <!-- Body highlight -->
+  <ellipse cx="92" cy="42" rx="45" ry="18" fill="rgba(255,255,255,0.2)"/>
+  
+  <!-- White stripes - elder has the most vibrant stripes -->
+  <!-- Head stripe - widest -->
+  <path d="M 42 15 Q 30 60 42 105" stroke="url(#stripeGrad)" stroke-width="18" fill="none" stroke-linecap="round" filter="url(#innerGlow)"/>
+  <path d="M 36 18 Q 24 60 36 102" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M 48 18 Q 36 60 48 102" stroke="#1a1a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Middle stripe -->
+  <path d="M 90 18 Q 78 60 90 102" stroke="url(#stripeGrad)" stroke-width="16" fill="none" stroke-linecap="round" filter="url(#innerGlow)"/>
+  <path d="M 84 22 Q 72 60 84 98" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 96 22 Q 84 60 96 98" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Tail stripe -->
+  <path d="M 138 35 Q 130 60 138 85" stroke="url(#stripeGrad)" stroke-width="12" fill="none" stroke-linecap="round" filter="url(#innerGlow)"/>
+  <path d="M 134 38 Q 126 60 134 82" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 142 38 Q 134 60 142 82" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Majestic dorsal fin -->
+  <path d="M 55 18 Q 68 -12 98 0 Q 118 8 110 18 Q 82 22 60 18 Z" fill="url(#finGrad)"/>
+  <path d="M 55 18 Q 68 -12 98 0 Q 118 8 110 18" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+  <path d="M 65 16 L 72 2" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  <path d="M 80 14 L 85 0" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  <path d="M 95 14 L 98 4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Anal fin -->
+  <path d="M 65 102 Q 80 120 110 112 Q 100 102 70 102 Z" fill="url(#finGrad)"/>
+  <path d="M 65 102 Q 80 120 110 112" stroke="#1a1a1a" stroke-width="1.5" fill="none"/>
+  
+  <!-- Large pectoral fin -->
+  <ellipse cx="72" cy="68" rx="22" ry="16" fill="url(#finGrad)" transform="rotate(-35 72 68)"/>
+  <path d="M 60 62 Q 72 68 66 82" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Wise eye with more detail -->
+  <circle cx="155" cy="50" r="17" fill="white" filter="url(#glow)"/>
+  <circle cx="160" cy="50" r="10" fill="#1a1a1a"/>
+  <circle cx="163" cy="46" r="5" fill="white"/>
+  <circle cx="157" cy="53" r="2.5" fill="rgba(255,255,255,0.6)"/>
+  
+  <!-- Slight "wisdom" lines near eye -->
+  <path d="M 170 42 Q 175 45 172 50" stroke="rgba(0,0,0,0.15)" stroke-width="1" fill="none"/>
+  
+  <!-- Mouth -->
+  <path d="M 172 60 Q 182 64 177 72" stroke="#8B2500" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Gill line -->
+  <path d="M 128 42 Q 122 52 128 64" stroke="rgba(0,0,0,0.25)" stroke-width="2.5" fill="none"/>
+  
+  <!-- Crown-like highlight for elder -->
+  <path d="M 75 12 L 78 8 L 82 12 L 86 6 L 90 12" stroke="rgba(255,215,0,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,25 @@
+{
+  "name": "achoo",
+  "version": "1.0.0",
+  "description": "A Feeding Frenzy-style browser game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "game",
+    "phaser",
+    "typescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/three": "^0.182.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6"
+  },
+  "dependencies": {
+    "three": "^0.182.0"
+  }
+}
