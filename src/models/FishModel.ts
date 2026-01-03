@@ -3,6 +3,7 @@ import * as THREE from 'three';
 export interface FishModelOptions {
   stage?: 'baby' | 'juvenile' | 'adult' | 'elder';
   scale?: number;
+  fishType?: string; // Fish type (e.g., 'clownfish')
 }
 
 // Texture cache to avoid loading same texture multiple times
@@ -10,7 +11,7 @@ const textureCache = new Map<string, THREE.Texture>();
 const textureLoader = new THREE.TextureLoader();
 
 // Preload all fish textures (both directions, alive and dead)
-export function preloadFishTextures(): Promise<void> {
+export function preloadFishTextures(fishType: string = 'clownfish'): Promise<void> {
   const stages = ['baby', 'juvenile', 'adult', 'elder'];
   const directions = ['', '-left']; // '' for right, '-left' for left
   const states = ['', '-dead']; // '' for alive, '-dead' for dead
@@ -20,12 +21,14 @@ export function preloadFishTextures(): Promise<void> {
   for (const stage of stages) {
     for (const dir of directions) {
       for (const state of states) {
-        // Key format: "baby", "baby-left", "baby-dead", "baby-dead-left"
-        const key = state ? `${stage}${state}${dir}` : `${stage}${dir}`;
-        // Path format: clownfish-baby.svg, clownfish-dead-baby.svg, etc.
+        // Key format: "clownfish:baby", "clownfish:baby-left", "clownfish:baby-dead", etc.
+        const key = state 
+          ? `${fishType}:${stage}-dead${dir}` 
+          : `${fishType}:${stage}${dir}`;
+        // Path format: /assets/fish/clownfish/clownfish-baby.svg, etc.
         const path = state 
-          ? `/assets/clownfish-dead-${stage}${dir}.svg`
-          : `/assets/clownfish-${stage}${dir}.svg`;
+          ? `/assets/fish/${fishType}/${fishType}-dead-${stage}${dir}.svg`
+          : `/assets/fish/${fishType}/${fishType}-${stage}${dir}.svg`;
         
         promises.push(
           new Promise<void>((resolve) => {
@@ -52,24 +55,24 @@ export function preloadFishTextures(): Promise<void> {
 }
 
 // Get texture for a stage, direction, and alive/dead state
-function getTexture(stage: string, facingLeft: boolean, isDead: boolean = false): THREE.Texture | null {
+function getTexture(stage: string, facingLeft: boolean, fishType: string = 'clownfish', isDead: boolean = false): THREE.Texture | null {
   let key: string;
   if (isDead) {
-    key = facingLeft ? `${stage}-dead-left` : `${stage}-dead`;
+    key = facingLeft ? `${fishType}:${stage}-dead-left` : `${fishType}:${stage}-dead`;
   } else {
-    key = facingLeft ? `${stage}-left` : stage;
+    key = facingLeft ? `${fishType}:${stage}-left` : `${fishType}:${stage}`;
   }
   return textureCache.get(key) ?? null;
 }
 
 export function createFishModel(options: FishModelOptions = {}): THREE.Group {
-  const { stage = 'baby', scale = 1 } = options;
+  const { stage = 'baby', scale = 1, fishType = 'clownfish' } = options;
 
   const fish = new THREE.Group();
 
   // Get textures for both directions
-  const rightTexture = getTexture(stage, false);
-  const leftTexture = getTexture(stage, true);
+  const rightTexture = getTexture(stage, false, fishType);
+  const leftTexture = getTexture(stage, true, fishType);
 
   if (rightTexture && leftTexture) {
     // Create TWO sprites - one for each direction
@@ -371,13 +374,13 @@ export function setFishDirection(fish: THREE.Group, facingRight: boolean): void 
 }
 
 // Swap fish sprites to dead versions
-export function swapToDeadSprite(fish: THREE.Group, stage: string): void {
+export function swapToDeadSprite(fish: THREE.Group, stage: string, fishType: string = 'clownfish'): void {
   // Skip if already swapped to dead
   if (fish.userData.isDeadSprite) return;
   
   // Get dead textures
-  const deadRightTexture = getTexture(stage, false, true);
-  const deadLeftTexture = getTexture(stage, true, true);
+  const deadRightTexture = getTexture(stage, false, fishType, true);
+  const deadLeftTexture = getTexture(stage, true, fishType, true);
   
   // Handle dual-sprite system
   if (fish.userData.hasDualSprites) {

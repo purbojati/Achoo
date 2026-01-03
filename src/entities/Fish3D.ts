@@ -538,7 +538,7 @@ export class Fish3D {
 
     // === Phase 1: Swap to dead sprite immediately ===
     // This shows the X eyes and poisoned color from the SVG
-    swapToDeadSprite(this.fishModel, this.currentStage.stageKey);
+    swapToDeadSprite(this.fishModel, this.currentStage.stageKey, 'clownfish');
 
     // === Phase 2: Flip upside down (0 - 0.5) ===
     // Smooth rotation to belly-up position

@@ -22,15 +22,30 @@ The game features beautiful 3D graphics with:
 - **Egg Collection** - Click eggs to collect them instantly, or wait for auto-collect
 - **Buy Fish** - Spend points to add new baby fish to your aquarium (max 10 fish)
 - **Survival** - Keep your fish fed! They shrink and die if starved
+- **Lifespan** - Fish age over time and eventually die of old age
 
 ### Fish Lifecycle
 
-| Stage | Size | Produces Eggs | Egg Multiplier |
-|-------|------|---------------|----------------|
-| Baby | 0.3 - 0.5 | No | - |
-| Juvenile | 0.5 - 0.8 | No | - |
-| Adult | 0.8 - 1.2 | Yes | 1x |
-| Elder | 1.2 - 1.5 | Yes | 2x |
+| Stage | Size | Produces Eggs | Egg Multiplier | Lifespan |
+|-------|------|---------------|----------------|----------|
+| Baby | 0.3 - 0.5 | No | - | ~3 min |
+| Juvenile | 0.5 - 0.8 | No | - | ~5.4 min |
+| Adult | 0.8 - 1.2 | Yes | 1x | ~7.5 min |
+| Elder | 1.2 - 1.5 | Yes | 2x | ~10.5 min |
+
+### Fish Death
+
+Fish can die from two causes:
+
+1. **Starvation** - If not fed, fish shrink over time. When they get too small, they die.
+2. **Old Age** - Each fish has a lifespan. When they reach the end, they die naturally.
+
+When a fish dies:
+- Their color turns **sickly green-gray**
+- They show **X eyes** (dead eyes)
+- They **flip upside down** (belly up)
+- They **float to the surface**
+- They **fade away** and disappear
 
 ### Economy
 
@@ -52,6 +67,11 @@ The game features beautiful 3D graphics with:
   - 🐟 **Juvenile** - Growing with more defined stripes
   - 🐠 **Adult** - Full-colored with three white stripes
   - 👑 **Elder** - Majestic with golden highlights
+- **Dead fish sprites** - When dying, fish swap to special "dead" versions with:
+  - Sickly green-gray coloring
+  - X eyes (crossed out eyes)
+  - Tongue sticking out
+  - Dizzy swirl effects above head
 - Smooth swimming animations with bobbing effects
 - **Proper directional facing** - Fish face left when swimming left, right when swimming right
 
@@ -160,14 +180,24 @@ src/
 
 public/
 └── assets/
-    ├── clownfish-baby.svg         # Baby fish (facing right)
-    ├── clownfish-baby-left.svg    # Baby fish (facing left)
-    ├── clownfish-juvenile.svg     # Juvenile fish (facing right)
-    ├── clownfish-juvenile-left.svg # Juvenile fish (facing left)
-    ├── clownfish-adult.svg        # Adult fish (facing right)
-    ├── clownfish-adult-left.svg   # Adult fish (facing left)
-    ├── clownfish-elder.svg        # Elder fish (facing right)
-    └── clownfish-elder-left.svg   # Elder fish (facing left)
+    └── fish/
+        └── clownfish/
+            ├── clownfish-baby.svg              # Baby fish (facing right)
+            ├── clownfish-baby-left.svg          # Baby fish (facing left)
+            ├── clownfish-juvenile.svg           # Juvenile fish (facing right)
+            ├── clownfish-juvenile-left.svg      # Juvenile fish (facing left)
+            ├── clownfish-adult.svg              # Adult fish (facing right)
+            ├── clownfish-adult-left.svg         # Adult fish (facing left)
+            ├── clownfish-elder.svg             # Elder fish (facing right)
+            ├── clownfish-elder-left.svg          # Elder fish (facing left)
+            ├── clownfish-dead-baby.svg           # Dead baby fish (facing right)
+            ├── clownfish-dead-baby-left.svg      # Dead baby fish (facing left)
+            ├── clownfish-dead-juvenile.svg       # Dead juvenile fish (facing right)
+            ├── clownfish-dead-juvenile-left.svg  # Dead juvenile fish (facing left)
+            ├── clownfish-dead-adult.svg           # Dead adult fish (facing right)
+            ├── clownfish-dead-adult-left.svg     # Dead adult fish (facing left)
+            ├── clownfish-dead-elder.svg          # Dead elder fish (facing right)
+            └── clownfish-dead-elder-left.svg     # Dead elder fish (facing left)
 ```
 
 ## How to Play
@@ -189,14 +219,20 @@ public/
 - Balance spending on food vs saving for new fish
 - Watch your fish swim naturally - each has unique movement patterns!
 - Fish need time to turn around, so drop food in front of them
-- Growth is gradual - be patient and keep feeding consistently
+- Growth is slow and gradual - be patient and keep feeding consistently
 - Food is cheap (1 point) - feed often to keep fish healthy!
+- Fish have limited lifespans - plan ahead and buy new fish before elders die
+- Bigger fish live longer - help them grow to extend their lifespan
+- When a fish starts looking green and flips over, it's dying - time to say goodbye!
 
 ## Customizing Fish Sprites
 
-The game uses SVG sprites for the clownfish located in `public/assets/`. Each stage has two versions:
-- **Right-facing**: `clownfish-{stage}.svg`
-- **Left-facing**: `clownfish-{stage}-left.svg`
+The game uses SVG sprites organized by fish type in `public/assets/fish/{fishType}/`. Each stage has two versions:
+- **Right-facing**: `{fishType}-{stage}.svg`
+- **Left-facing**: `{fishType}-{stage}-left.svg`
+- **Dead versions**: `{fishType}-dead-{stage}.svg` and `{fishType}-dead-{stage}-left.svg`
+
+Currently, all fish sprites are in `public/assets/fish/clownfish/`.
 
 ### Using AI-Generated Images
 
@@ -223,19 +259,19 @@ You can replace these with AI-generated images! Here's how:
 
 4. Replace the SVG files with your PNG images (you need BOTH directions):
    ```
-   public/assets/clownfish-baby.png
-   public/assets/clownfish-baby-left.png
-   public/assets/clownfish-juvenile.png
-   public/assets/clownfish-juvenile-left.png
-   public/assets/clownfish-adult.png
-   public/assets/clownfish-adult-left.png
-   public/assets/clownfish-elder.png
-   public/assets/clownfish-elder-left.png
+   public/assets/fish/clownfish/clownfish-baby.png
+   public/assets/fish/clownfish/clownfish-baby-left.png
+   public/assets/fish/clownfish/clownfish-juvenile.png
+   public/assets/fish/clownfish/clownfish-juvenile-left.png
+   public/assets/fish/clownfish/clownfish-adult.png
+   public/assets/fish/clownfish/clownfish-adult-left.png
+   public/assets/fish/clownfish/clownfish-elder.png
+   public/assets/fish/clownfish/clownfish-elder-left.png
    ```
 
 5. Update `src/models/FishModel.ts` to load `.png` instead of `.svg`:
    ```typescript
-   const path = `/assets/clownfish-${stage}${dir}.png`;
+   const path = `/assets/fish/${fishType}/${fishType}-${stage}${dir}.png`;
    ```
 
 ## License
