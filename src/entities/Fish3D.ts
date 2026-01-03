@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createFishModel, animateFish, setFishDirection } from '../models/FishModel';
+import { createFishModel, animateFish, setFishDirection, setFishPoisonedEffect, swapToDeadSprite } from '../models/FishModel';
 import { GAME_CONFIG, TANK_BOUNDS, getFishStage, FishStage, FISH_STAGES } from '../config/gameConfig';
 
 export class Fish3D {
@@ -46,6 +46,15 @@ export class Fish3D {
   // State
   private isDead: boolean = false;
   private currentStage: FishStage;
+
+  // Age and lifespan
+  private age: number = 0;
+  private lifespan: number;
+
+  // Dying animation state
+  private isDying: boolean = false;
+  private dyingProgress: number = 0;
+  private dyingStartRotation: number = 0;
 
   // Food reference
   private foodPositions: THREE.Vector3[] = [];
@@ -101,6 +110,10 @@ export class Fish3D {
 
     // Randomize egg timer
     this.timeSinceLastEgg = Math.random() * GAME_CONFIG.eggSpawnInterval;
+
+    // Initialize lifespan with some randomness (80% - 120% of base)
+    const lifespanVariation = 0.8 + Math.random() * 0.4;
+    this.lifespan = GAME_CONFIG.fishBaseLifespan * this.currentStage.lifespanMultiplier * lifespanVariation;
   }
 
   public setFoodPositions(positions: THREE.Vector3[]): void {
@@ -120,7 +133,17 @@ export class Fish3D {
 
     const deltaSeconds = delta / 1000;
     this.time += deltaSeconds;
+
+    // Handle dying animation separately
+    if (this.isDying) {
+      this.updateDyingAnimation(deltaSeconds);
+      return;
+    }
+
     this.swimPhase += deltaSeconds * (2.5 + this.personality.speedMultiplier);
+
+    // Update age
+    this.updateAge(delta);
 
     // Update hunger
     this.updateHunger(delta);
@@ -163,10 +186,28 @@ export class Fish3D {
       this.targetSize = this._size;
 
       if (this._size <= GAME_CONFIG.minSizeBeforeDeath) {
-        this.die();
+        this.startDying();
       }
     } else {
       this.isHungry = false;
+    }
+  }
+
+  private updateAge(delta: number): void {
+    this.age += delta;
+
+    // Update lifespan based on current stage (larger fish live longer)
+    const stage = getFishStage(this._size);
+    if (stage.stageKey !== this.currentStage.stageKey) {
+      // When stage changes, extend lifespan proportionally
+      const oldMultiplier = this.currentStage.lifespanMultiplier;
+      const newMultiplier = stage.lifespanMultiplier;
+      this.lifespan = this.lifespan * (newMultiplier / oldMultiplier);
+    }
+
+    // Check for death by old age
+    if (this.age >= this.lifespan) {
+      this.startDying();
     }
   }
 
@@ -359,6 +400,9 @@ export class Fish3D {
   }
 
   public canEat(foodPosition: THREE.Vector3): boolean {
+    // Can't eat while dying or dead
+    if (this.isDying || this.isDead) return false;
+    
     const eatDistance = 0.6 + this._size * 0.4;
     return this.group.position.distanceTo(foodPosition) < eatDistance;
   }
@@ -476,6 +520,64 @@ export class Fish3D {
     }
   }
 
+  private startDying(): void {
+    if (this.isDying || this.isDead) return;
+    
+    this.isDying = true;
+    this.dyingProgress = 0;
+    this.dyingStartRotation = this.group.rotation.z;
+    this.currentSpeed = 0;
+  }
+
+  private updateDyingAnimation(deltaSeconds: number): void {
+    const dyingDuration = GAME_CONFIG.fishDyingDuration / 1000; // Convert to seconds
+    this.dyingProgress += deltaSeconds / dyingDuration;
+
+    // Clamp progress to 0-1
+    const progress = Math.min(this.dyingProgress, 1);
+
+    // === Phase 1: Swap to dead sprite immediately ===
+    // This shows the X eyes and poisoned color from the SVG
+    swapToDeadSprite(this.fishModel, this.currentStage.stageKey);
+
+    // === Phase 2: Flip upside down (0 - 0.5) ===
+    // Smooth rotation to belly-up position
+    const flipProgress = Math.min(progress / 0.5, 1);
+    // Use easeOutCubic for a natural flip motion
+    const easeFlip = 1 - Math.pow(1 - flipProgress, 3);
+    const targetRotation = this.dyingStartRotation + Math.PI; // 180 degrees
+    this.group.rotation.z = THREE.MathUtils.lerp(
+      this.dyingStartRotation,
+      targetRotation,
+      easeFlip
+    );
+
+    // === Phase 3: Float up (0.1 - 1.0) ===
+    // Slowly float toward the surface
+    if (progress > 0.1) {
+      const floatSpeed = GAME_CONFIG.fishDyingFloatSpeed;
+      this.group.position.y += floatSpeed * deltaSeconds;
+      
+      // Constrain to tank top
+      this.group.position.y = Math.min(this.group.position.y, TANK_BOUNDS.maxY);
+    }
+
+    // === Phase 4: Fade out (0.5 - 1.0) ===
+    let opacity = 1;
+    if (progress > 0.5) {
+      const fadeProgress = (progress - 0.5) / 0.5;
+      opacity = 1 - fadeProgress;
+    }
+
+    // Apply opacity (dead sprite already has poisoned coloring)
+    setFishPoisonedEffect(this.fishModel, 0, opacity);
+
+    // Complete death when animation finishes
+    if (progress >= 1) {
+      this.die();
+    }
+  }
+
   private die(): void {
     if (this.isDead) return;
     this.isDead = true;
@@ -495,6 +597,10 @@ export class Fish3D {
 
   public isAlive(): boolean {
     return !this.isDead;
+  }
+
+  public isCurrentlyDying(): boolean {
+    return this.isDying;
   }
 
   public dispose(): void {

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <title>Dead Juvenile Clownfish</title>
+  <defs>
+    <linearGradient id="bodyGradDead" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6a8a6a"/>
+      <stop offset="100%" style="stop-color:#4a6a4a"/>
+    </linearGradient>
+    <linearGradient id="finGradDead" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7a9a7a"/>
+      <stop offset="100%" style="stop-color:#5a7a5a"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Tail fin -->
+  <ellipse cx="25" cy="60" rx="22" ry="32" fill="url(#finGradDead)" opacity="0.9" filter="url(#shadow)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="68" ry="42" fill="url(#bodyGradDead)" filter="url(#shadow)"/>
+  
+  <!-- Body highlight - muted -->
+  <ellipse cx="95" cy="48" rx="35" ry="12" fill="rgba(255,255,255,0.08)"/>
+  
+  <!-- Pale white stripes -->
+  <path d="M 50 22 Q 43 60 50 98" stroke="#c8c8c8" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M 46 25 Q 39 60 46 95" stroke="#3a3a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 54 25 Q 47 60 54 95" stroke="#3a3a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  
+  <path d="M 105 28 Q 98 60 105 92" stroke="#c8c8c8" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M 101 31 Q 94 60 101 89" stroke="#3a3a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M 109 31 Q 102 60 109 89" stroke="#3a3a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Top fin - droopy/wilted -->
+  <path d="M 65 22 Q 78 8 95 15 Q 102 20 95 24 Q 78 26 68 22 Z" fill="url(#finGradDead)"/>
+  <path d="M 65 22 Q 78 8 95 15 Q 102 20 95 24" stroke="#3a3a3a" stroke-width="1" fill="none"/>
+  
+  <!-- Anal fin -->
+  <path d="M 72 98 Q 82 110 100 105 Q 95 98 76 98 Z" fill="url(#finGradDead)"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="80" cy="72" rx="18" ry="12" fill="url(#finGradDead)" transform="rotate(-25 80 72)"/>
+  
+  <!-- X Eyes - dead look -->
+  <circle cx="150" cy="52" r="14" fill="#e5e5e5" filter="url(#glow)"/>
+  <line x1="144" y1="46" x2="156" y2="58" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+  <line x1="156" y1="46" x2="144" y2="58" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Tongue sticking out -->
+  <ellipse cx="172" cy="68" rx="10" ry="6" fill="#7a5a7a"/>
+  
+  <!-- Dizzy swirls -->
+  <path d="M 155 28 Q 165 22 162 34 Q 170 30 166 42" stroke="#555" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <circle cx="175" cy="35" r="3" fill="#555" opacity="0.5"/>
+</svg>

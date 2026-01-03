@@ -9,44 +9,56 @@ export interface FishModelOptions {
 const textureCache = new Map<string, THREE.Texture>();
 const textureLoader = new THREE.TextureLoader();
 
-// Preload all fish textures (both directions)
+// Preload all fish textures (both directions, alive and dead)
 export function preloadFishTextures(): Promise<void> {
   const stages = ['baby', 'juvenile', 'adult', 'elder'];
   const directions = ['', '-left']; // '' for right, '-left' for left
+  const states = ['', '-dead']; // '' for alive, '-dead' for dead
   
   const promises: Promise<void>[] = [];
   
   for (const stage of stages) {
     for (const dir of directions) {
-      const key = `${stage}${dir}`;
-      const path = `/assets/clownfish-${stage}${dir}.svg`;
-      
-      promises.push(
-        new Promise<void>((resolve) => {
-          textureLoader.load(
-            path,
-            (texture) => {
-              texture.colorSpace = THREE.SRGBColorSpace;
-              textureCache.set(key, texture);
-              resolve();
-            },
-            undefined,
-            () => {
-              // If loading fails, continue without this texture
-              resolve();
-            }
-          );
-        })
-      );
+      for (const state of states) {
+        // Key format: "baby", "baby-left", "baby-dead", "baby-dead-left"
+        const key = state ? `${stage}${state}${dir}` : `${stage}${dir}`;
+        // Path format: clownfish-baby.svg, clownfish-dead-baby.svg, etc.
+        const path = state 
+          ? `/assets/clownfish-dead-${stage}${dir}.svg`
+          : `/assets/clownfish-${stage}${dir}.svg`;
+        
+        promises.push(
+          new Promise<void>((resolve) => {
+            textureLoader.load(
+              path,
+              (texture) => {
+                texture.colorSpace = THREE.SRGBColorSpace;
+                textureCache.set(key, texture);
+                resolve();
+              },
+              undefined,
+              () => {
+                // If loading fails, continue without this texture
+                resolve();
+              }
+            );
+          })
+        );
+      }
     }
   }
   
   return Promise.all(promises).then(() => undefined);
 }
 
-// Get texture for a stage and direction
-function getTexture(stage: string, facingLeft: boolean): THREE.Texture | null {
-  const key = facingLeft ? `${stage}-left` : stage;
+// Get texture for a stage, direction, and alive/dead state
+function getTexture(stage: string, facingLeft: boolean, isDead: boolean = false): THREE.Texture | null {
+  let key: string;
+  if (isDead) {
+    key = facingLeft ? `${stage}-dead-left` : `${stage}-dead`;
+  } else {
+    key = facingLeft ? `${stage}-left` : stage;
+  }
   return textureCache.get(key) ?? null;
 }
 
@@ -356,4 +368,102 @@ export function setFishDirection(fish: THREE.Group, facingRight: boolean): void 
 
   // Method 3: Procedural fish (flip the whole group on X)
   fish.scale.x = facingRight ? Math.abs(fish.scale.x) : -Math.abs(fish.scale.x);
+}
+
+// Swap fish sprites to dead versions
+export function swapToDeadSprite(fish: THREE.Group, stage: string): void {
+  // Skip if already swapped to dead
+  if (fish.userData.isDeadSprite) return;
+  
+  // Get dead textures
+  const deadRightTexture = getTexture(stage, false, true);
+  const deadLeftTexture = getTexture(stage, true, true);
+  
+  // Handle dual-sprite system
+  if (fish.userData.hasDualSprites) {
+    const rightSprite = fish.getObjectByName('fishSpriteRight') as THREE.Sprite | undefined;
+    const leftSprite = fish.getObjectByName('fishSpriteLeft') as THREE.Sprite | undefined;
+    
+    if (rightSprite && deadRightTexture) {
+      rightSprite.material.map = deadRightTexture;
+      rightSprite.material.needsUpdate = true;
+    }
+    if (leftSprite && deadLeftTexture) {
+      leftSprite.material.map = deadLeftTexture;
+      leftSprite.material.needsUpdate = true;
+    }
+    
+    fish.userData.isDeadSprite = true;
+    return;
+  }
+  
+  // Handle single sprite
+  const sprite = fish.getObjectByName('fishSprite') as THREE.Sprite | undefined;
+  if (sprite && deadRightTexture) {
+    sprite.material.map = deadRightTexture;
+    sprite.material.needsUpdate = true;
+    fish.userData.isDeadSprite = true;
+  }
+}
+
+// Poisoned color for dying fish (sickly green-gray) - used for procedural fish
+const POISONED_COLOR = new THREE.Color(0x7fa87f);
+const NORMAL_COLOR = new THREE.Color(0xffffff);
+
+// Apply poisoned effect to fish (color tint and opacity)
+export function setFishPoisonedEffect(
+  fish: THREE.Group,
+  intensity: number,
+  opacity: number = 1
+): void {
+  // Clamp values
+  const clampedIntensity = Math.max(0, Math.min(1, intensity));
+  const clampedOpacity = Math.max(0, Math.min(1, opacity));
+
+  // Interpolate between normal and poisoned color
+  const tintColor = NORMAL_COLOR.clone().lerp(POISONED_COLOR, clampedIntensity);
+
+  // Handle sprite-based fish
+  if (fish.userData.hasDualSprites) {
+    const rightSprite = fish.getObjectByName('fishSpriteRight') as THREE.Sprite | undefined;
+    const leftSprite = fish.getObjectByName('fishSpriteLeft') as THREE.Sprite | undefined;
+
+    for (const sprite of [rightSprite, leftSprite]) {
+      if (sprite) {
+        sprite.material.color.copy(tintColor);
+        sprite.material.opacity = clampedOpacity;
+        sprite.material.needsUpdate = true;
+      }
+    }
+    return;
+  }
+
+  // Handle single sprite
+  const sprite = fish.getObjectByName('fishSprite') as THREE.Sprite | undefined;
+  if (sprite) {
+    sprite.material.color.copy(tintColor);
+    sprite.material.opacity = clampedOpacity;
+    sprite.material.needsUpdate = true;
+    return;
+  }
+
+  // Handle procedural fish - tint all mesh materials
+  fish.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      const material = child.material as THREE.MeshToonMaterial | THREE.MeshBasicMaterial;
+      if (material.color) {
+        // Store original color if not already stored
+        if (!child.userData.originalColor) {
+          child.userData.originalColor = material.color.clone();
+        }
+        // Lerp from original color toward poisoned tint
+        material.color.copy(child.userData.originalColor).lerp(POISONED_COLOR, clampedIntensity * 0.5);
+      }
+      if ('opacity' in material) {
+        material.transparent = true;
+        material.opacity = clampedOpacity;
+      }
+      material.needsUpdate = true;
+    }
+  });
 }

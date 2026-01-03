@@ -36,6 +36,9 @@ export const GAME_CONFIG = {
   fishTurnSpeed: 3, // How fast fish turns (radians per second)
   fishAcceleration: 0.03, // Smooth acceleration
   growthPerFood: 0.025, // Slower growth - takes more food to grow
+  fishBaseLifespan: 90000, // Base lifespan in ms (90 seconds)
+  fishDyingDuration: 3000, // How long dying animation takes (3 seconds)
+  fishDyingFloatSpeed: 0.5, // How fast fish floats up when dying (units/sec)
 };
 
 // Fish lifecycle stages
@@ -47,13 +50,14 @@ export interface FishStage {
   canProduceEggs: boolean;
   eggMultiplier: number;
   color: number; // Fallback color for procedural fish
+  lifespanMultiplier: number; // Multiplier for base lifespan
 }
 
 export const FISH_STAGES: FishStage[] = [
-  { name: 'Baby', stageKey: 'baby', minSize: 0.3, maxSize: 0.5, canProduceEggs: false, eggMultiplier: 0, color: 0xff8c42 },
-  { name: 'Juvenile', stageKey: 'juvenile', minSize: 0.5, maxSize: 0.8, canProduceEggs: false, eggMultiplier: 0, color: 0xff7b29 },
-  { name: 'Adult', stageKey: 'adult', minSize: 0.8, maxSize: 1.2, canProduceEggs: true, eggMultiplier: 1, color: 0xff6b00 },
-  { name: 'Elder', stageKey: 'elder', minSize: 1.2, maxSize: 1.5, canProduceEggs: true, eggMultiplier: 2, color: 0xff5500 },
+  { name: 'Baby', stageKey: 'baby', minSize: 0.3, maxSize: 0.5, canProduceEggs: false, eggMultiplier: 0, color: 0xff8c42, lifespanMultiplier: 1.0 },
+  { name: 'Juvenile', stageKey: 'juvenile', minSize: 0.5, maxSize: 0.8, canProduceEggs: false, eggMultiplier: 0, color: 0xff7b29, lifespanMultiplier: 1.5 },
+  { name: 'Adult', stageKey: 'adult', minSize: 0.8, maxSize: 1.2, canProduceEggs: true, eggMultiplier: 1, color: 0xff6b00, lifespanMultiplier: 2.0 },
+  { name: 'Elder', stageKey: 'elder', minSize: 1.2, maxSize: 1.5, canProduceEggs: true, eggMultiplier: 2, color: 0xff5500, lifespanMultiplier: 2.5 },
 ];
 
 // Get fish stage based on size
