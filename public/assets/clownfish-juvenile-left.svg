@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF7B29"/>
+      <stop offset="100%" style="stop-color:#E85D04"/>
+    </linearGradient>
+    <linearGradient id="finGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA366"/>
+      <stop offset="100%" style="stop-color:#FF7B29"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <g transform="translate(200, 0) scale(-1, 1)">
+    <!-- Tail fin -->
+    <path d="M 15 60 Q 5 40 20 30 Q 35 45 35 60 Q 35 75 20 90 Q 5 80 15 60 Z" fill="url(#finGrad)" filter="url(#shadow)"/>
+    
+    <!-- Main body -->
+    <ellipse cx="100" cy="60" rx="68" ry="42" fill="url(#bodyGrad)" filter="url(#shadow)"/>
+    
+    <!-- White stripes with black outlines - classic clownfish -->
+    <path d="M 50 20 Q 43 60 50 100" stroke="white" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M 46 22 Q 39 60 46 98" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 54 22 Q 47 60 54 98" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    
+    <path d="M 105 25 Q 98 60 105 95" stroke="white" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 101 28 Q 94 60 101 92" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 109 28 Q 102 60 109 92" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <!-- Dorsal fin -->
+    <path d="M 65 22 Q 80 0 100 8 Q 110 15 105 22 Q 85 25 70 22 Z" fill="url(#finGrad)"/>
+    <path d="M 65 22 Q 80 0 100 8 Q 110 15 105 22" stroke="#1a1a1a" stroke-width="1" fill="none"/>
+    
+    <!-- Anal fin -->
+    <path d="M 75 98 Q 85 110 100 105 Q 95 98 80 98 Z" fill="url(#finGrad)"/>
+    
+    <!-- Pectoral fin -->
+    <ellipse cx="80" cy="72" rx="18" ry="12" fill="url(#finGrad)" transform="rotate(-25 80 72)"/>
+    
+    <!-- Eye -->
+    <circle cx="148" cy="55" r="14" fill="white" filter="url(#glow)"/>
+    <circle cx="151" cy="55" r="8" fill="#1a1a1a"/>
+    <circle cx="154" cy="52" r="3" fill="white"/>
+    
+    <!-- Mouth -->
+    <path d="M 165 63 Q 172 65 168 70" stroke="#B34700" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

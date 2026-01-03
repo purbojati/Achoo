@@ -215,7 +215,7 @@ export class Fish3D {
       while (this.currentAngle < -Math.PI) this.currentAngle += Math.PI * 2;
     }
 
-    // Update sprite direction based on current angle
+    // Update direction based on current angle
     this.facingRight = Math.cos(this.currentAngle) >= 0;
     setFishDirection(this.fishModel, this.facingRight);
 
@@ -415,37 +415,47 @@ export class Fish3D {
   }
 
   private updateVisualSize(): void {
-    // Get current sprite
-    const sprite = this.fishModel.getObjectByName('fishSprite') as THREE.Sprite | undefined;
-    
-    if (sprite) {
-      // Update sprite scale based on size - smooth interpolation
-      const baseWidth = 2.5;
-      const baseHeight = 1.5;
-      
-      const targetAbsScaleX = baseWidth * this.targetSize;
-      const targetScaleY = baseHeight * this.targetSize;
-      
-      // Use the tracked direction, not the sprite's current scale sign
-      const directionSign = this.facingRight ? 1 : -1;
-      const currentAbsScaleX = Math.abs(sprite.scale.x);
-      
-      // Lerp the magnitude only, then apply the tracked direction
-      const newAbsScaleX = THREE.MathUtils.lerp(currentAbsScaleX, targetAbsScaleX, 0.03);
-      sprite.scale.x = newAbsScaleX * directionSign;
-      sprite.scale.y = THREE.MathUtils.lerp(sprite.scale.y, targetScaleY, 0.03);
-    } else {
-      // Procedural fish scaling
-      const currentScale = this.fishModel.scale.x;
-      const diff = this.targetSize - Math.abs(currentScale);
+    const baseWidth = 2.5;
+    const baseHeight = 1.5;
+    const targetScaleX = baseWidth * this.targetSize;
+    const targetScaleY = baseHeight * this.targetSize;
 
-      if (Math.abs(diff) > 0.01) {
-        const newScale = currentScale + diff * 0.03;
-        this.fishModel.scale.x = newScale;
-        this.fishModel.scale.y = Math.abs(newScale);
-        this.fishModel.scale.z = Math.sign(this.fishModel.scale.z) * Math.abs(newScale);
+    // Handle dual-sprite system
+    if (this.fishModel.userData.hasDualSprites) {
+      const rightSprite = this.fishModel.getObjectByName('fishSpriteRight') as THREE.Sprite | undefined;
+      const leftSprite = this.fishModel.getObjectByName('fishSpriteLeft') as THREE.Sprite | undefined;
+      
+      // Update BOTH sprites' scales (they share the same size, just different textures)
+      if (rightSprite) {
+        rightSprite.scale.x = THREE.MathUtils.lerp(rightSprite.scale.x, targetScaleX, 0.03);
+        rightSprite.scale.y = THREE.MathUtils.lerp(rightSprite.scale.y, targetScaleY, 0.03);
       }
+      if (leftSprite) {
+        leftSprite.scale.x = THREE.MathUtils.lerp(leftSprite.scale.x, targetScaleX, 0.03);
+        leftSprite.scale.y = THREE.MathUtils.lerp(leftSprite.scale.y, targetScaleY, 0.03);
+      }
+      return;
     }
+
+    // Handle single sprite (with scale flip for direction)
+    const sprite = this.fishModel.getObjectByName('fishSprite') as THREE.Sprite | undefined;
+    if (sprite) {
+      // For single sprite, preserve direction sign while updating size
+      const currentSign = sprite.scale.x >= 0 ? 1 : -1;
+      const currentAbsX = Math.abs(sprite.scale.x);
+      const newAbsX = THREE.MathUtils.lerp(currentAbsX, targetScaleX, 0.03);
+      sprite.scale.x = newAbsX * currentSign;
+      sprite.scale.y = THREE.MathUtils.lerp(sprite.scale.y, targetScaleY, 0.03);
+      return;
+    }
+
+    // Handle procedural fish (scale the whole model)
+    const currentAbsScale = Math.abs(this.fishModel.scale.x);
+    const newAbsScale = THREE.MathUtils.lerp(currentAbsScale, this.targetSize, 0.03);
+    const sign = this.facingRight ? 1 : -1;
+    this.fishModel.scale.x = newAbsScale * sign;
+    this.fishModel.scale.y = newAbsScale;
+    this.fishModel.scale.z = newAbsScale;
   }
 
   private updateStage(): void {

@@ -9,33 +9,45 @@ export interface FishModelOptions {
 const textureCache = new Map<string, THREE.Texture>();
 const textureLoader = new THREE.TextureLoader();
 
-// Preload all fish textures
+// Preload all fish textures (both directions)
 export function preloadFishTextures(): Promise<void> {
   const stages = ['baby', 'juvenile', 'adult', 'elder'];
-  const promises = stages.map((stage) => {
-    const path = `/assets/clownfish-${stage}.svg`;
-    return new Promise<void>((resolve) => {
-      textureLoader.load(
-        path,
-        (texture) => {
-          texture.colorSpace = THREE.SRGBColorSpace;
-          textureCache.set(stage, texture);
-          resolve();
-        },
-        undefined,
-        () => {
-          // If loading fails, we'll create a fallback texture
-          resolve();
-        }
+  const directions = ['', '-left']; // '' for right, '-left' for left
+  
+  const promises: Promise<void>[] = [];
+  
+  for (const stage of stages) {
+    for (const dir of directions) {
+      const key = `${stage}${dir}`;
+      const path = `/assets/clownfish-${stage}${dir}.svg`;
+      
+      promises.push(
+        new Promise<void>((resolve) => {
+          textureLoader.load(
+            path,
+            (texture) => {
+              texture.colorSpace = THREE.SRGBColorSpace;
+              textureCache.set(key, texture);
+              resolve();
+            },
+            undefined,
+            () => {
+              // If loading fails, continue without this texture
+              resolve();
+            }
+          );
+        })
       );
-    });
-  });
+    }
+  }
+  
   return Promise.all(promises).then(() => undefined);
 }
 
-// Get or load texture for a stage
-function getTexture(stage: string): THREE.Texture | null {
-  return textureCache.get(stage) ?? null;
+// Get texture for a stage and direction
+function getTexture(stage: string, facingLeft: boolean): THREE.Texture | null {
+  const key = facingLeft ? `${stage}-left` : stage;
+  return textureCache.get(key) ?? null;
 }
 
 export function createFishModel(options: FishModelOptions = {}): THREE.Group {
@@ -43,26 +55,54 @@ export function createFishModel(options: FishModelOptions = {}): THREE.Group {
 
   const fish = new THREE.Group();
 
-  // Get the texture for this stage
-  const texture = getTexture(stage);
+  // Get textures for both directions
+  const rightTexture = getTexture(stage, false);
+  const leftTexture = getTexture(stage, true);
 
-  if (texture) {
-    // Create sprite-based fish with texture
-    const spriteMaterial = new THREE.SpriteMaterial({
-      map: texture,
+  if (rightTexture && leftTexture) {
+    // Create TWO sprites - one for each direction
+    // Right-facing sprite (default visible)
+    const rightMaterial = new THREE.SpriteMaterial({
+      map: rightTexture,
       transparent: true,
       alphaTest: 0.1,
     });
+    const rightSprite = new THREE.Sprite(rightMaterial);
+    rightSprite.scale.set(2.5 * scale, 1.5 * scale, 1);
+    rightSprite.name = 'fishSpriteRight';
+    rightSprite.visible = true;
+    fish.add(rightSprite);
 
+    // Left-facing sprite (hidden by default)
+    const leftMaterial = new THREE.SpriteMaterial({
+      map: leftTexture,
+      transparent: true,
+      alphaTest: 0.1,
+    });
+    const leftSprite = new THREE.Sprite(leftMaterial);
+    leftSprite.scale.set(2.5 * scale, 1.5 * scale, 1);
+    leftSprite.name = 'fishSpriteLeft';
+    leftSprite.visible = false;
+    fish.add(leftSprite);
+
+    // Mark that this fish uses the dual-sprite system
+    fish.userData.hasDualSprites = true;
+  } else if (rightTexture) {
+    // Fallback: only right texture available, use scale flip
+    const spriteMaterial = new THREE.SpriteMaterial({
+      map: rightTexture,
+      transparent: true,
+      alphaTest: 0.1,
+    });
     const sprite = new THREE.Sprite(spriteMaterial);
-    // SVG aspect ratio is 200:120 = 5:3
-    // Start facing right (positive X scale)
     sprite.scale.set(2.5 * scale, 1.5 * scale, 1);
     sprite.name = 'fishSprite';
     fish.add(sprite);
+    fish.userData.hasDualSprites = false;
   } else {
-    // Fallback: Create procedural clownfish if texture not loaded
+    // Fallback: Create procedural clownfish if textures not loaded
     createProceduralClownfish(fish, stage, scale);
+    fish.userData.hasDualSprites = false;
   }
 
   return fish;
@@ -248,18 +288,28 @@ export function animateFish(
   fish: THREE.Group,
   time: number,
   speed: number = 1,
-  swimIntensity: number = 1
+  _swimIntensity: number = 1
 ): void {
-  // Check if sprite-based
+  // Check if using dual sprites
+  if (fish.userData.hasDualSprites) {
+    // Get whichever sprite is visible
+    const rightSprite = fish.getObjectByName('fishSpriteRight') as THREE.Sprite | undefined;
+    const leftSprite = fish.getObjectByName('fishSpriteLeft') as THREE.Sprite | undefined;
+    const activeSprite = rightSprite?.visible ? rightSprite : leftSprite;
+    
+    if (activeSprite) {
+      // Natural swimming motion - gentle bobbing
+      const bobAmount = Math.sin(time * 2.5 * speed) * 0.03;
+      activeSprite.position.y = bobAmount;
+    }
+    return;
+  }
+
+  // Check if single sprite
   const sprite = fish.getObjectByName('fishSprite') as THREE.Sprite | undefined;
   if (sprite) {
-    // Natural swimming motion - gentle bobbing
-    const bobAmount = Math.sin(time * 2.5 * speed) * 0.03 * swimIntensity;
+    const bobAmount = Math.sin(time * 2.5 * speed) * 0.03;
     sprite.position.y = bobAmount;
-
-    // Note: Don't modify scale here - it's handled by updateVisualSize in Fish3D
-    // to avoid conflicts with direction and size management
-
     return;
   }
 
@@ -282,14 +332,28 @@ export function animateFish(
   fish.rotation.z = Math.sin(time * 4 * speed) * 0.05;
 }
 
-// Helper to flip sprite direction
+// Helper to set fish direction by swapping sprites
 export function setFishDirection(fish: THREE.Group, facingRight: boolean): void {
+  // Method 1: Dual sprites (best - swap visibility)
+  if (fish.userData.hasDualSprites) {
+    const rightSprite = fish.getObjectByName('fishSpriteRight') as THREE.Sprite | undefined;
+    const leftSprite = fish.getObjectByName('fishSpriteLeft') as THREE.Sprite | undefined;
+    
+    if (rightSprite && leftSprite) {
+      rightSprite.visible = facingRight;
+      leftSprite.visible = !facingRight;
+    }
+    return;
+  }
+
+  // Method 2: Single sprite (fallback - flip scale)
   const sprite = fish.getObjectByName('fishSprite') as THREE.Sprite | undefined;
   if (sprite) {
-    // Flip sprite by negating scale.x
     const absScaleX = Math.abs(sprite.scale.x);
     sprite.scale.x = facingRight ? absScaleX : -absScaleX;
+    return;
   }
-  // Reset any rotation that might have been set
-  fish.rotation.y = 0;
+
+  // Method 3: Procedural fish (flip the whole group on X)
+  fish.scale.x = facingRight ? Math.abs(fish.scale.x) : -Math.abs(fish.scale.x);
 }

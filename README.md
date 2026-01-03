@@ -6,8 +6,9 @@ A **3D** aquarium simulation game built with Three.js and TypeScript. Feed your 
 
 The game features beautiful 3D graphics with:
 - **Vibrant Clownfish** - Sprite-based clownfish with orange and white stripes that evolve through life stages
+- **Realistic fish movement** - Fish properly face the direction they're swimming
 - Iridescent 3D eggs that float upward
-- Sinking 3D food pellets
+- Two-toned tablet food (red & cream capsules)
 - Animated seaweed and bubbles
 - Glass tank with frame and sandy bottom
 
@@ -15,7 +16,7 @@ The game features beautiful 3D graphics with:
 
 ### Core Mechanics
 
-- **Click to Feed** - Click anywhere in the tank to drop 3D food pellets (costs 5 points)
+- **Click to Feed** - Click anywhere in the tank to drop a food tablet (costs 1 point)
 - **Fish Growth** - Fish eat food and grow through 4 life stages, getting larger in 3D
 - **Egg Production** - Adult and Elder fish produce glowing 3D eggs periodically
 - **Egg Collection** - Click eggs to collect them instantly, or wait for auto-collect
@@ -36,7 +37,7 @@ The game features beautiful 3D graphics with:
 | Item | Points |
 |------|--------|
 | Starting Points | 100 |
-| Food Cost (per click) | -5 |
+| Food Cost (per click) | -1 |
 | Egg Value | 10-50+ (based on fish size) |
 | New Baby Fish | 50 |
 | Max Fish | 10 |
@@ -45,19 +46,21 @@ The game features beautiful 3D graphics with:
 
 ### Clownfish Sprites
 - **Beautiful SVG-based clownfish** with classic orange and white stripe patterns
+- **Dual-texture system** - Separate left and right-facing sprites for realistic movement
 - Four distinct life stages with unique appearances:
   - 🐣 **Baby** - Small, light orange clownfish
   - 🐟 **Juvenile** - Growing with more defined stripes
   - 🐠 **Adult** - Full-colored with three white stripes
   - 👑 **Elder** - Majestic with golden highlights
-- Smooth swimming animations with bobbing and breathing effects
-- Natural turning animation (fish can't swim backwards!)
+- Smooth swimming animations with bobbing effects
+- **Proper directional facing** - Fish face left when swimming left, right when swimming right
 
 ### Natural Fish Movement
 Each fish has **realistic swimming behavior**:
 - **Angle-based movement** - Fish swim in the direction they're facing
 - **Smooth turning** - Fish gradually rotate to face their target
 - **No backwards swimming** - Fish must turn around to change direction
+- **Sprite swapping** - Fish texture changes based on swim direction
 - **Wave motion** - Subtle side-to-side wiggle while swimming
 - **Body tilt** - Fish tilt when swimming up/down or turning
 
@@ -89,7 +92,8 @@ This means multiple fish in the tank will all swim with their own unique style!
 - Rotation while rising
 
 ### Food Model
-- Small spheres with tumbling animation
+- **Two-toned capsule tablets** (red & cream)
+- Tumbling animation while sinking
 - Sinking physics
 - Fade out over time
 
@@ -140,9 +144,9 @@ src/
 │   ├── Scene3D.ts             # Three.js scene, camera, lighting
 │   └── InputManager.ts        # Raycaster click detection
 ├── models/
-│   ├── FishModel.ts           # Sprite-based clownfish with textures
+│   ├── FishModel.ts           # Dual-sprite clownfish with L/R textures
 │   ├── EggModel.ts            # Procedural 3D egg geometry
-│   ├── FoodModel.ts           # Procedural 3D food geometry
+│   ├── FoodModel.ts           # Two-toned capsule tablet
 │   └── TankModel.ts           # Tank environment (walls, sand, seaweed)
 ├── entities/
 │   ├── Fish3D.ts              # Fish entity with AI, personality, growth
@@ -153,12 +157,23 @@ src/
 └── ui/
     ├── UIManager.ts           # HTML overlay UI
     └── styles.css             # UI styling
+
+public/
+└── assets/
+    ├── clownfish-baby.svg         # Baby fish (facing right)
+    ├── clownfish-baby-left.svg    # Baby fish (facing left)
+    ├── clownfish-juvenile.svg     # Juvenile fish (facing right)
+    ├── clownfish-juvenile-left.svg # Juvenile fish (facing left)
+    ├── clownfish-adult.svg        # Adult fish (facing right)
+    ├── clownfish-adult-left.svg   # Adult fish (facing left)
+    ├── clownfish-elder.svg        # Elder fish (facing right)
+    └── clownfish-elder-left.svg   # Elder fish (facing left)
 ```
 
 ## How to Play
 
 1. **Start** - Click PLAY on the menu screen
-2. **Feed** - Click anywhere in the 3D tank to drop food pellets
+2. **Feed** - Click anywhere in the 3D tank to drop a food tablet
 3. **Watch** - See your clownfish naturally swim and turn toward food
 4. **Grow** - Fish gradually grow larger as they eat (patience pays off!)
 5. **Collect** - Click glowing eggs to collect points
@@ -175,14 +190,13 @@ src/
 - Watch your fish swim naturally - each has unique movement patterns!
 - Fish need time to turn around, so drop food in front of them
 - Growth is gradual - be patient and keep feeding consistently
+- Food is cheap (1 point) - feed often to keep fish healthy!
 
 ## Customizing Fish Sprites
 
-The game uses SVG sprites for the clownfish located in `public/assets/`:
-- `clownfish-baby.svg`
-- `clownfish-juvenile.svg`
-- `clownfish-adult.svg`
-- `clownfish-elder.svg`
+The game uses SVG sprites for the clownfish located in `public/assets/`. Each stage has two versions:
+- **Right-facing**: `clownfish-{stage}.svg`
+- **Left-facing**: `clownfish-{stage}-left.svg`
 
 ### Using AI-Generated Images
 
@@ -195,23 +209,33 @@ You can replace these with AI-generated images! Here's how:
    
 2. Use prompts like:
    ```
-   "Cute cartoon clownfish, side view, orange and white stripes, 
+   "Cute cartoon clownfish, side view facing right, orange and white stripes, 
+   transparent background, game sprite style, vibrant colors"
+   ```
+   
+   Then generate the left-facing version:
+   ```
+   "Cute cartoon clownfish, side view facing left, orange and white stripes, 
    transparent background, game sprite style, vibrant colors"
    ```
 
 3. Save as PNG with transparent background (recommended size: 200x120 pixels)
 
-4. Replace the SVG files with your PNG images:
+4. Replace the SVG files with your PNG images (you need BOTH directions):
    ```
    public/assets/clownfish-baby.png
+   public/assets/clownfish-baby-left.png
    public/assets/clownfish-juvenile.png
+   public/assets/clownfish-juvenile-left.png
    public/assets/clownfish-adult.png
+   public/assets/clownfish-adult-left.png
    public/assets/clownfish-elder.png
+   public/assets/clownfish-elder-left.png
    ```
 
 5. Update `src/models/FishModel.ts` to load `.png` instead of `.svg`:
    ```typescript
-   const path = `/assets/clownfish-${stage}.png`;
+   const path = `/assets/clownfish-${stage}${dir}.png`;
    ```
 
 ## License

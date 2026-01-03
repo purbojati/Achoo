@@ -3,15 +3,15 @@ import { createFoodModel, animateFood } from '../models/FoodModel';
 import { GAME_CONFIG, TANK_BOUNDS } from '../config/gameConfig';
 
 export class Food3D {
-  private mesh: THREE.Mesh;
+  private group: THREE.Group;
   private time: number = 0;
   private lifetime: number = 0;
   private isConsumed: boolean = false;
   private sinkSpeed: number;
 
   constructor(x: number, y: number, z: number) {
-    this.mesh = createFoodModel({ scale: 1 });
-    this.mesh.position.set(x, y, z);
+    this.group = createFoodModel({ scale: 1 });
+    this.group.position.set(x, y, z);
 
     // Randomize sink speed slightly
     this.sinkSpeed = GAME_CONFIG.foodSinkSpeed * (0.8 + Math.random() * 0.4);
@@ -30,27 +30,32 @@ export class Food3D {
     }
 
     // Sink
-    this.mesh.position.y -= this.sinkSpeed * (delta / 1000);
+    this.group.position.y -= this.sinkSpeed * (delta / 1000);
 
     // Wobble while sinking
-    this.mesh.position.x += Math.sin(this.time * 3) * 0.005;
-    this.mesh.position.z += Math.cos(this.time * 2) * 0.003;
+    this.group.position.x += Math.sin(this.time * 3) * 0.005;
+    this.group.position.z += Math.cos(this.time * 2) * 0.003;
 
     // Stop at tank bottom
     const bottomY = TANK_BOUNDS.minY + 0.3;
-    if (this.mesh.position.y < bottomY) {
-      this.mesh.position.y = bottomY;
+    if (this.group.position.y < bottomY) {
+      this.group.position.y = bottomY;
     }
 
     // Animate food
-    animateFood(this.mesh, this.time);
+    animateFood(this.group, this.time);
 
     // Fade out near end of lifetime
     const fadeStart = GAME_CONFIG.foodLifetime - 3000;
     if (this.lifetime > fadeStart) {
       const opacity = 1 - (this.lifetime - fadeStart) / 3000;
-      (this.mesh.material as THREE.MeshToonMaterial).opacity = opacity;
-      (this.mesh.material as THREE.MeshToonMaterial).transparent = true;
+      this.group.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          const material = child.material as THREE.MeshToonMaterial;
+          material.opacity = opacity;
+          material.transparent = true;
+        }
+      });
     }
   }
 
@@ -62,20 +67,24 @@ export class Food3D {
     return !this.isConsumed;
   }
 
-  public getMesh(): THREE.Mesh {
-    return this.mesh;
+  public getMesh(): THREE.Group {
+    return this.group;
   }
 
   public getPosition(): THREE.Vector3 {
-    return this.mesh.position.clone();
+    return this.group.position.clone();
   }
 
   public dispose(): void {
-    this.mesh.geometry.dispose();
-    if (Array.isArray(this.mesh.material)) {
-      this.mesh.material.forEach((m) => m.dispose());
-    } else {
-      this.mesh.material.dispose();
-    }
+    this.group.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.dispose();
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m) => m.dispose());
+        } else {
+          child.material.dispose();
+        }
+      }
+    });
   }
 }
