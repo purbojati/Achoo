@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="glow-juv-l" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="body-juv-l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.95"/>
+      <stop offset="40%" style="stop-color:#00dddd;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#009999;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="belly-glow-juv-l" cx="50%" cy="70%" r="50%">
+      <stop offset="0%" style="stop-color:#99ffff;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0.35"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Outer glow -->
+  <ellipse cx="100" cy="60" rx="55" ry="32" fill="#00ffff" opacity="0.18" filter="url(#glow-juv-l)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="50" ry="30" fill="url(#body-juv-l)" filter="url(#glow-juv-l)"/>
+  
+  <!-- Belly glow -->
+  <ellipse cx="100" cy="70" rx="35" ry="16" fill="url(#belly-glow-juv-l)"/>
+  
+  <!-- Stripe patterns -->
+  <path d="M130 45 Q100 35 70 45" stroke="#00ffaa" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M125 75 Q100 85 75 75" stroke="#00ffaa" stroke-width="2" fill="none" opacity="0.5"/>
+  
+  <!-- Bioluminescent spots -->
+  <circle cx="125" cy="55" r="4" fill="#88ffff" opacity="0.9"/>
+  <circle cx="105" cy="45" r="3" fill="#aaffff" opacity="0.85"/>
+  <circle cx="85" cy="50" r="3.5" fill="#88ffff" opacity="0.88"/>
+  <circle cx="75" cy="65" r="2.5" fill="#aaffff" opacity="0.8"/>
+  
+  <!-- Dorsal fin -->
+  <path d="M120 28 Q100 12 80 28 Q100 36 120 28" fill="#00dddd" opacity="0.85" filter="url(#glow-juv-l)"/>
+  
+  <!-- Tail fin -->
+  <path d="M52 60 L22 35 L15 60 L22 85 Z" fill="#00cccc" opacity="0.9" filter="url(#glow-juv-l)"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="120" cy="72" rx="15" ry="10" fill="#00bbbb" opacity="0.75" transform="rotate(25 120 72)"/>
+  
+  <!-- Ventral fin -->
+  <path d="M105 85 L100 100 L95 85" fill="#00aaaa" opacity="0.7"/>
+  
+  <!-- Eye -->
+  <circle cx="140" cy="55" r="12" fill="#001122"/>
+  <circle cx="140" cy="55" r="9" fill="#112233"/>
+  <circle cx="142" cy="52" r="5" fill="#00ffff"/>
+  <circle cx="144" cy="50" r="2.5" fill="#ffffff"/>
+  
+  <!-- Mouth -->
+  <path d="M155 62 Q162 66 155 70" stroke="#007777" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

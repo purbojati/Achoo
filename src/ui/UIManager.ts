@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GameStats } from '../managers/GameManager';
-import { GAME_CONFIG } from '../config/gameConfig';
+import { GAME_CONFIG, FishTypeKey, FISH_TYPES } from '../config/gameConfig';
 
 export class UIManager {
   private container: HTMLElement;
@@ -11,12 +11,13 @@ export class UIManager {
   private gameOverScreen!: HTMLElement;
   private pointsDisplay!: HTMLElement;
   private fishCountDisplay!: HTMLElement;
-  private buyFishButton!: HTMLElement;
+  private buyFishButtons: Map<FishTypeKey, HTMLElement> = new Map();
   private insufficientFundsMessage!: HTMLElement;
+  private sharkWarning!: HTMLElement;
 
   // Callbacks
   private onPlayClick?: () => void;
-  private onBuyFishClick?: () => void;
+  private onBuyFishClick?: (fishType: FishTypeKey) => void;
   private onRetryClick?: () => void;
   private onMenuClick?: () => void;
 
@@ -72,30 +73,52 @@ export class UIManager {
   private createGameUI(parent: HTMLElement): void {
     this.gameUI = document.createElement('div');
     this.gameUI.className = 'screen game-ui hidden';
+    
+    // Create fish type buttons HTML
+    const fishButtonsHtml = Object.values(FISH_TYPES).map(fishType => `
+      <button class="btn btn-fish buy-fish-btn" data-fish-type="${fishType.key}" title="${fishType.description}">
+        <span class="fish-icon ${fishType.key}"></span>
+        <span class="fish-name">${fishType.name}</span>
+        <span class="fish-cost">${fishType.cost} pts</span>
+      </button>
+    `).join('');
+    
     this.gameUI.innerHTML = `
       <div class="top-bar">
         <div class="stats">
           <div class="points">Points: <span id="points-value">0</span></div>
           <div class="fish-count">Fish: <span id="fish-count-value">0/10</span></div>
         </div>
-        <button class="btn btn-success buy-fish-btn">Buy Fish: ${GAME_CONFIG.babyFishCost}</button>
+        <div class="buy-fish-container">
+          ${fishButtonsHtml}
+        </div>
       </div>
       <div class="bottom-bar">
         <p>Click in tank to feed (Cost: ${GAME_CONFIG.feedCost} pts)</p>
       </div>
       <div class="insufficient-funds hidden">Not enough points!</div>
+      <div class="shark-warning hidden">
+        <span class="shark-icon">🦈</span>
+        <span>SHARK INCOMING!</span>
+      </div>
     `;
     parent.appendChild(this.gameUI);
 
     // Get references
     this.pointsDisplay = this.gameUI.querySelector('#points-value') as HTMLElement;
     this.fishCountDisplay = this.gameUI.querySelector('#fish-count-value') as HTMLElement;
-    this.buyFishButton = this.gameUI.querySelector('.buy-fish-btn') as HTMLElement;
     this.insufficientFundsMessage = this.gameUI.querySelector('.insufficient-funds') as HTMLElement;
+    this.sharkWarning = this.gameUI.querySelector('.shark-warning') as HTMLElement;
 
-    // Add buy fish button listener
-    this.buyFishButton.addEventListener('click', () => {
-      if (this.onBuyFishClick) this.onBuyFishClick();
+    // Setup buy fish buttons for each type
+    const buyButtons = this.gameUI.querySelectorAll('.buy-fish-btn');
+    buyButtons.forEach((btn) => {
+      const fishType = btn.getAttribute('data-fish-type') as FishTypeKey;
+      this.buyFishButtons.set(fishType, btn as HTMLElement);
+      
+      btn.addEventListener('click', () => {
+        if (this.onBuyFishClick) this.onBuyFishClick(fishType);
+      });
     });
   }
 
@@ -123,6 +146,10 @@ export class UIManager {
           <span>Fish Lost:</span>
           <span id="stat-fish-lost" class="stat-value">0</span>
         </div>
+        <div class="stat-row shark-stat">
+          <span>🦈 Eaten by Shark:</span>
+          <span id="stat-shark-eaten" class="stat-value">0</span>
+        </div>
       </div>
       <div class="button-row">
         <button class="btn btn-primary retry-btn">TRY AGAIN</button>
@@ -148,7 +175,7 @@ export class UIManager {
     this.onPlayClick = callback;
   }
 
-  public setOnBuyFishClick(callback: () => void): void {
+  public setOnBuyFishClick(callback: (fishType: FishTypeKey) => void): void {
     this.onBuyFishClick = callback;
   }
 
@@ -183,11 +210,13 @@ export class UIManager {
     const fishRaised = this.gameOverScreen.querySelector('#stat-fish-raised') as HTMLElement;
     const eggs = this.gameOverScreen.querySelector('#stat-eggs') as HTMLElement;
     const fishLost = this.gameOverScreen.querySelector('#stat-fish-lost') as HTMLElement;
+    const sharkEaten = this.gameOverScreen.querySelector('#stat-shark-eaten') as HTMLElement;
 
     maxPoints.textContent = stats.maxPointsReached.toString();
     fishRaised.textContent = stats.totalFishRaised.toString();
     eggs.textContent = stats.totalEggsCollected.toString();
     fishLost.textContent = stats.fishDied.toString();
+    sharkEaten.textContent = stats.fishEatenByShark.toString();
   }
 
   // Update UI elements
@@ -230,5 +259,15 @@ export class UIManager {
         popup.remove();
       }, 500);
     }, 500);
+  }
+
+  public showSharkWarning(): void {
+    this.sharkWarning.classList.remove('hidden');
+    this.sharkWarning.classList.add('shake');
+  }
+
+  public hideSharkWarning(): void {
+    this.sharkWarning.classList.add('hidden');
+    this.sharkWarning.classList.remove('shake');
   }
 }

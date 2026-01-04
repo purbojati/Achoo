@@ -5,10 +5,11 @@ import { TankModel } from '../models/TankModel';
 import { Fish3D } from '../entities/Fish3D';
 import { Food3D } from '../entities/Food3D';
 import { Egg3D } from '../entities/Egg3D';
+import { Shark3D } from '../entities/Shark3D';
 import { GameManager, GameStats } from '../managers/GameManager';
 import { UIManager } from '../ui/UIManager';
-import { GAME_CONFIG, TANK_BOUNDS, SCENES } from '../config/gameConfig';
-import { preloadFishTextures } from '../models/FishModel';
+import { GAME_CONFIG, TANK_BOUNDS, SCENES, FishTypeKey, SHARK_CONFIG } from '../config/gameConfig';
+import { preloadFishTextures, preloadSharkTextures } from '../models/FishModel';
 
 export class Game {
   private scene3D: Scene3D;
@@ -21,6 +22,13 @@ export class Game {
   private fishes: Fish3D[] = [];
   private foods: Food3D[] = [];
   private eggs: Egg3D[] = [];
+  private shark: Shark3D | null = null;
+
+  // Shark spawn timer
+  private sharkSpawnTimer: number = 0;
+  private nextSharkSpawnTime: number = 0;
+  private sharkWarningTimer: number = 0;
+  private isSharkWarning: boolean = false;
 
   private currentScene: string = SCENES.MENU;
   private isRunning: boolean = false;
@@ -88,8 +96,8 @@ export class Game {
       this.startGame();
     });
 
-    this.uiManager.setOnBuyFishClick(() => {
-      this.buyFish();
+    this.uiManager.setOnBuyFishClick((fishType: FishTypeKey) => {
+      this.buyFish(fishType);
     });
 
     this.uiManager.setOnRetryClick(() => {
@@ -102,8 +110,11 @@ export class Game {
   }
 
   public async start(): Promise<void> {
-    // Preload fish textures before starting
-    await preloadFishTextures();
+    // Preload fish and shark textures before starting
+    await Promise.all([
+      preloadFishTextures(),
+      preloadSharkTextures(),
+    ]);
     
     this.showMenu();
     this.animate();
@@ -124,13 +135,24 @@ export class Game {
     this.clearEntities();
     this.gameManager.reset();
 
+    // Reset shark spawn timer
+    this.sharkSpawnTimer = 0;
+    this.nextSharkSpawnTime = this.getRandomSharkSpawnTime();
+    this.isSharkWarning = false;
+    this.sharkWarningTimer = 0;
+
     // Spawn initial fish
-    this.spawnFish(0, 0, 0);
+    this.spawnFish(0, 0, 0, 'clownfish');
 
     // Show game UI
     this.uiManager.showGame();
     this.uiManager.updatePoints(this.gameManager.points);
     this.uiManager.updateFishCount(1, GAME_CONFIG.maxFish);
+  }
+
+  private getRandomSharkSpawnTime(): number {
+    return SHARK_CONFIG.minSpawnInterval + 
+           Math.random() * (SHARK_CONFIG.maxSpawnInterval - SHARK_CONFIG.minSpawnInterval);
   }
 
   private handleGameOver(stats: GameStats): void {
@@ -161,6 +183,14 @@ export class Game {
       egg.dispose();
     }
     this.eggs = [];
+
+    // Remove shark
+    if (this.shark) {
+      this.scene3D.remove(this.shark.getGroup());
+      this.shark.dispose();
+      this.shark = null;
+    }
+    this.uiManager.hideSharkWarning();
   }
 
   private tryFeed(point: THREE.Vector3): void {
@@ -187,8 +217,8 @@ export class Game {
     }
   }
 
-  private spawnFish(x: number, y: number, z: number): void {
-    const fish = new Fish3D(x, y, z);
+  private spawnFish(x: number, y: number, z: number, fishType: FishTypeKey = 'clownfish'): void {
+    const fish = new Fish3D(x, y, z, fishType);
 
     fish.setOnEggProduced((eggX, eggY, eggZ, value) => {
       this.spawnEgg(eggX, eggY, eggZ, value);
@@ -220,12 +250,12 @@ export class Game {
     this.eggs.push(egg);
   }
 
-  private buyFish(): void {
-    if (this.gameManager.purchaseFish()) {
+  private buyFish(fishType: FishTypeKey = 'clownfish'): void {
+    if (this.gameManager.purchaseFish(fishType)) {
       const x = (Math.random() - 0.5) * (TANK_BOUNDS.maxX - TANK_BOUNDS.minX) * 0.6;
       const y = (Math.random() - 0.5) * (TANK_BOUNDS.maxY - TANK_BOUNDS.minY) * 0.6;
       const z = (Math.random() - 0.5) * (TANK_BOUNDS.maxZ - TANK_BOUNDS.minZ) * 0.6;
-      this.spawnFish(x, y, z);
+      this.spawnFish(x, y, z, fishType);
     }
   }
 
@@ -318,6 +348,106 @@ export class Game {
           food.consume();
         }
       }
+    }
+
+    // Update shark spawning and behavior
+    this.updateShark(deltaMs);
+  }
+
+  private updateShark(deltaMs: number): void {
+    // Handle shark warning phase
+    if (this.isSharkWarning) {
+      this.sharkWarningTimer += deltaMs;
+      if (this.sharkWarningTimer >= SHARK_CONFIG.warningDuration) {
+        this.isSharkWarning = false;
+        this.sharkWarningTimer = 0;
+        this.uiManager.hideSharkWarning();
+        this.spawnShark();
+      }
+      return;
+    }
+
+    // Check if shark should spawn (only if we have fish and no shark currently)
+    if (!this.shark && this.fishes.length > 0) {
+      this.sharkSpawnTimer += deltaMs;
+      if (this.sharkSpawnTimer >= this.nextSharkSpawnTime) {
+        this.sharkSpawnTimer = 0;
+        this.nextSharkSpawnTime = this.getRandomSharkSpawnTime();
+        // Start warning phase
+        this.isSharkWarning = true;
+        this.sharkWarningTimer = 0;
+        this.uiManager.showSharkWarning();
+      }
+    }
+
+    // Update shark if present
+    if (this.shark) {
+      // Find nearest fish for shark to target
+      const nearestFish = this.findNearestFishToShark();
+      if (nearestFish) {
+        this.shark.setTargetFish(nearestFish.getPosition());
+        
+        // Check if shark can eat fish
+        if (this.shark.canEatFish(nearestFish.getPosition())) {
+          this.shark.eatFish(nearestFish.getPosition());
+          this.removeFishByShark(nearestFish);
+        }
+      } else {
+        this.shark.setTargetFish(null);
+      }
+
+      this.shark.update(deltaMs);
+
+      // Remove shark if it's left
+      if (!this.shark.isStillActive()) {
+        this.scene3D.remove(this.shark.getGroup());
+        this.shark.dispose();
+        this.shark = null;
+      }
+    }
+  }
+
+  private spawnShark(): void {
+    this.shark = new Shark3D();
+    
+    this.shark.setOnFishEaten((_position) => {
+      // Could add visual effects here
+    });
+
+    this.shark.setOnLeave(() => {
+      // Shark has left the tank
+    });
+
+    this.scene3D.add(this.shark.getGroup());
+  }
+
+  private findNearestFishToShark(): Fish3D | null {
+    if (!this.shark || this.fishes.length === 0) return null;
+
+    let nearest: Fish3D | null = null;
+    let nearestDistance = Infinity;
+    const sharkPos = this.shark.getPosition();
+
+    for (const fish of this.fishes) {
+      if (!fish.isAlive() || fish.isCurrentlyDying()) continue;
+      
+      const distance = sharkPos.distanceTo(fish.getPosition());
+      if (distance < nearestDistance) {
+        nearest = fish;
+        nearestDistance = distance;
+      }
+    }
+
+    return nearest;
+  }
+
+  private removeFishByShark(fish: Fish3D): void {
+    const index = this.fishes.indexOf(fish);
+    if (index > -1) {
+      this.fishes.splice(index, 1);
+      this.scene3D.remove(fish.getGroup());
+      fish.dispose();
+      this.gameManager.removeFish(true); // true = eaten by shark
     }
   }
 }

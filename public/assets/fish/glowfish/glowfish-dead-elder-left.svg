@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="dim-glow-elder-l" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="dead-body-elder-l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#708f80;stop-opacity:0.9"/>
+      <stop offset="25%" style="stop-color:#608f70;stop-opacity:0.92"/>
+      <stop offset="50%" style="stop-color:#507f60;stop-opacity:0.94"/>
+      <stop offset="100%" style="stop-color:#405f40;stop-opacity:0.98"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Dimmed outer glow -->
+  <ellipse cx="100" cy="60" rx="68" ry="40" fill="#506f60" opacity="0.1" filter="url(#dim-glow-elder-l)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="58" ry="34" fill="url(#dead-body-elder-l)"/>
+  
+  <!-- Faded belly -->
+  <ellipse cx="100" cy="72" rx="45" ry="20" fill="#507f60" opacity="0.35"/>
+  
+  <!-- Faded gold stripe patterns -->
+  <path d="M145 40 Q100 25 55 40" stroke="#8a9a70" stroke-width="4" fill="none" opacity="0.35"/>
+  <path d="M140 55 Q100 45 60 55" stroke="#708f70" stroke-width="2.5" fill="none" opacity="0.3"/>
+  <path d="M135 80 Q100 92 65 80" stroke="#8a9a70" stroke-width="3" fill="none" opacity="0.32"/>
+  
+  <!-- Faded spots -->
+  <circle cx="135" cy="50" r="6" fill="#608f70" opacity="0.3"/>
+  <circle cx="115" cy="38" r="5" fill="#708f80" opacity="0.28"/>
+  <circle cx="92" cy="42" r="5.5" fill="#608f70" opacity="0.3"/>
+  <circle cx="70" cy="50" r="4.5" fill="#708f80" opacity="0.26"/>
+  <circle cx="60" cy="65" r="4" fill="#608f70" opacity="0.25"/>
+  
+  <!-- Faded crown -->
+  <ellipse cx="100" cy="28" rx="25" ry="8" fill="#8a9a60" opacity="0.15"/>
+  
+  <!-- Grand dorsal fin - wilted -->
+  <path d="M130 25 Q115 8 100 14 Q85 8 70 25 Q100 36 130 25" fill="#506f50" opacity="0.45"/>
+  
+  <!-- Magnificent tail fin - droopy -->
+  <path d="M45 60 L12 32 L7 60 L12 90 Z" fill="#506f50" opacity="0.5"/>
+  <path d="M38 60 L22 45 L18 60 L22 78 Z" fill="#608f60" opacity="0.35"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="130" cy="78" rx="22" ry="14" fill="#506f50" opacity="0.4" transform="rotate(35 130 78)"/>
+  
+  <!-- Ventral fin -->
+  <path d="M115 92 L100 112 L85 92" fill="#506f50" opacity="0.4"/>
+  
+  <!-- X Eyes -->
+  <circle cx="150" cy="50" r="16" fill="#304030"/>
+  <line x1="142" y1="42" x2="158" y2="58" stroke="#90aa90" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="158" y1="42" x2="142" y2="58" stroke="#90aa90" stroke-width="4.5" stroke-linecap="round"/>
+  
+  <!-- Tongue sticking out -->
+  <ellipse cx="172" cy="65" rx="9" ry="6" fill="#aa7788" opacity="0.8"/>
+  
+  <!-- Dizzy swirls - multiple for elder -->
+  <path d="M140 25 Q128 12 116 25 Q128 35 140 25" stroke="#80aa90" stroke-width="2" fill="none" opacity="0.45"/>
+  <circle cx="128" cy="18" r="3.5" fill="#80aa90" opacity="0.4"/>
+  <path d="M125 35 Q118 28 111 35" stroke="#80aa90" stroke-width="1.5" fill="none" opacity="0.35"/>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="glow-baby-l" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="body-baby-l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.9"/>
+      <stop offset="50%" style="stop-color:#00cccc;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#008888;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="belly-glow-baby-l" cx="50%" cy="70%" r="50%">
+      <stop offset="0%" style="stop-color:#88ffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0.3"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Outer glow -->
+  <ellipse cx="100" cy="60" rx="50" ry="30" fill="#00ffff" opacity="0.15" filter="url(#glow-baby-l)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="45" ry="28" fill="url(#body-baby-l)" filter="url(#glow-baby-l)"/>
+  
+  <!-- Belly glow -->
+  <ellipse cx="100" cy="68" rx="30" ry="15" fill="url(#belly-glow-baby-l)"/>
+  
+  <!-- Bioluminescent spots -->
+  <circle cx="120" cy="55" r="3" fill="#88ffff" opacity="0.9"/>
+  <circle cx="105" cy="48" r="2" fill="#aaffff" opacity="0.8"/>
+  <circle cx="85" cy="52" r="2.5" fill="#88ffff" opacity="0.85"/>
+  
+  <!-- Dorsal fin -->
+  <path d="M115 32 Q100 20 85 32 Q100 38 115 32" fill="#00dddd" opacity="0.8"/>
+  
+  <!-- Tail fin -->
+  <path d="M55 60 L30 40 L25 60 L30 80 Z" fill="#00cccc" opacity="0.85" filter="url(#glow-baby-l)"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="115" cy="70" rx="12" ry="8" fill="#00bbbb" opacity="0.7" transform="rotate(20 115 70)"/>
+  
+  <!-- Eye -->
+  <circle cx="135" cy="55" r="10" fill="#001122"/>
+  <circle cx="135" cy="55" r="8" fill="#112233"/>
+  <circle cx="137" cy="53" r="4" fill="#00ffff"/>
+  <circle cx="139" cy="51" r="2" fill="#ffffff"/>
+  
+  <!-- Cute mouth -->
+  <path d="M150 62 Q155 65 150 68" stroke="#006666" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

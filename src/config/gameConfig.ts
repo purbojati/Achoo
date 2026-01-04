@@ -17,12 +17,60 @@ export const SCENES = {
   GAME_OVER: 'gameOver',
 };
 
+// Fish type definitions
+export type FishTypeKey = 'clownfish' | 'glowfish';
+
+export interface FishTypeConfig {
+  key: FishTypeKey;
+  name: string;
+  cost: number;
+  eggValueMultiplier: number; // Multiplier on top of base egg value
+  speedMultiplier: number; // Base speed adjustment
+  description: string;
+  color: number; // Primary color for procedural fallback
+  glowColor?: number; // Glow effect color (for glowfish)
+}
+
+export const FISH_TYPES: Record<FishTypeKey, FishTypeConfig> = {
+  clownfish: {
+    key: 'clownfish',
+    name: 'Clownfish',
+    cost: 50,
+    eggValueMultiplier: 1.0,
+    speedMultiplier: 1.0,
+    description: 'Classic orange clownfish',
+    color: 0xff6b00,
+  },
+  glowfish: {
+    key: 'glowfish',
+    name: 'Glowfish',
+    cost: 100,
+    eggValueMultiplier: 2.0,
+    speedMultiplier: 1.2,
+    description: 'Rare bioluminescent fish',
+    color: 0x00ffff,
+    glowColor: 0x00ffff,
+  },
+};
+
+// Shark configuration
+export const SHARK_CONFIG = {
+  minSpawnInterval: 60000, // Minimum 1 minute between shark appearances
+  maxSpawnInterval: 180000, // Maximum 3 minutes between shark appearances
+  stayDuration: 15000, // How long shark stays in tank (15 seconds)
+  speed: 4.0, // Shark swims faster than regular fish
+  eatDistance: 1.5, // How close shark needs to be to eat a fish
+  eatCooldown: 3000, // Time between eating fish (3 seconds)
+  maxEatsPerVisit: 2, // Maximum fish shark can eat per visit
+  warningDuration: 2000, // Warning time before shark appears (2 seconds)
+};
+
 // Game economy and mechanics
 export const GAME_CONFIG = {
   startingPoints: 100,
   feedCost: 1,
   foodPerClick: 1,
-  babyFishCost: 50,
+  babyFishCost: 50, // Legacy, use FISH_TYPES instead
   maxFish: 10,
   eggBaseValue: 10,
   eggSpawnInterval: 8000,

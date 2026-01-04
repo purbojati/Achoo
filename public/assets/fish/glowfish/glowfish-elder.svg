@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="glow-elder" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="body-elder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1"/>
+      <stop offset="25%" style="stop-color:#88ffff;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#00eeee;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#00bbbb;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="belly-glow-elder" cx="50%" cy="65%" r="60%">
+      <stop offset="0%" style="stop-color:#ccffff;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0.5"/>
+    </radialGradient>
+    <linearGradient id="fin-gradient-elder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#66ffff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#00ddcc;stop-opacity:0.9"/>
+    </linearGradient>
+    <filter id="sparkle" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer glow aura - strongest for elder -->
+  <ellipse cx="100" cy="60" rx="68" ry="40" fill="#00ffff" opacity="0.25" filter="url(#glow-elder)"/>
+  <ellipse cx="100" cy="60" rx="62" ry="36" fill="#66ffff" opacity="0.15" filter="url(#glow-elder)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="58" ry="34" fill="url(#body-elder)" filter="url(#glow-elder)"/>
+  
+  <!-- Belly glow - brightest -->
+  <ellipse cx="100" cy="72" rx="45" ry="20" fill="url(#belly-glow-elder)"/>
+  
+  <!-- Majestic stripe patterns with gold accent -->
+  <path d="M55 40 Q100 22 145 40" stroke="#ffff88" stroke-width="5" fill="none" opacity="0.8"/>
+  <path d="M60 55 Q100 42 140 55" stroke="#00ffcc" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M65 80 Q100 95 135 80" stroke="#ffff88" stroke-width="4" fill="none" opacity="0.7"/>
+  
+  <!-- Bioluminescent spots - sparkle effect -->
+  <circle cx="65" cy="50" r="6" fill="#ffffff" opacity="0.95" filter="url(#sparkle)"/>
+  <circle cx="85" cy="38" r="5" fill="#ccffff" opacity="0.92"/>
+  <circle cx="108" cy="42" r="5.5" fill="#ffffff" opacity="0.95" filter="url(#sparkle)"/>
+  <circle cx="130" cy="50" r="4.5" fill="#aaffff" opacity="0.9"/>
+  <circle cx="140" cy="65" r="4" fill="#ccffff" opacity="0.88"/>
+  <circle cx="118" cy="72" r="3.5" fill="#ffffff" opacity="0.85"/>
+  <circle cx="75" cy="68" r="3" fill="#ccffff" opacity="0.82"/>
+  
+  <!-- Golden crown/halo effect -->
+  <ellipse cx="100" cy="28" rx="25" ry="8" fill="#ffff66" opacity="0.3" filter="url(#glow-elder)"/>
+  
+  <!-- Grand dorsal fin -->
+  <path d="M70 22 Q85 0 100 8 Q115 0 130 22 Q100 35 70 22" fill="url(#fin-gradient-elder)" filter="url(#glow-elder)"/>
+  <path d="M85 18 Q100 8 115 18" stroke="#ffff88" stroke-width="2" fill="none" opacity="0.7"/>
+  
+  <!-- Magnificent tail fin -->
+  <path d="M155 60 L192 25 L198 60 L192 95 Z" fill="#00ddcc" opacity="0.95" filter="url(#glow-elder)"/>
+  <path d="M162 60 L182 38 L186 60 L182 82 Z" fill="#66ffff" opacity="0.7"/>
+  <path d="M168 60 L178 48 L180 60 L178 72 Z" fill="#aaffff" opacity="0.5"/>
+  
+  <!-- Flowing pectoral fin -->
+  <ellipse cx="70" cy="78" rx="22" ry="14" fill="#00ccbb" opacity="0.85" transform="rotate(-35 70 78)"/>
+  <path d="M60 72 Q50 85 65 90" stroke="#66ffff" stroke-width="2" fill="none" opacity="0.6"/>
+  
+  <!-- Elegant ventral fin -->
+  <path d="M85 92 L100 115 L115 92" fill="#00bbaa" opacity="0.8"/>
+  <path d="M92 95 L100 108 L108 95" fill="#66ffff" opacity="0.5"/>
+  
+  <!-- Wise eye with glow -->
+  <circle cx="50" cy="50" r="16" fill="#003344" filter="url(#glow-elder)"/>
+  <circle cx="50" cy="50" r="12" fill="#114455"/>
+  <circle cx="48" cy="47" r="7" fill="#00ffff"/>
+  <circle cx="45" cy="44" r="3.5" fill="#ffffff"/>
+  <!-- Wisdom sparkle -->
+  <circle cx="55" cy="42" r="2" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- Dignified mouth -->
+  <path d="M32 56 Q22 62 32 68" stroke="#009999" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

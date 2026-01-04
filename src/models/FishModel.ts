@@ -1,17 +1,21 @@
 import * as THREE from 'three';
+import { FishTypeKey } from '../config/gameConfig';
 
 export interface FishModelOptions {
   stage?: 'baby' | 'juvenile' | 'adult' | 'elder';
   scale?: number;
-  fishType?: string; // Fish type (e.g., 'clownfish')
+  fishType?: FishTypeKey; // Fish type (e.g., 'clownfish', 'glowfish')
 }
 
 // Texture cache to avoid loading same texture multiple times
 const textureCache = new Map<string, THREE.Texture>();
 const textureLoader = new THREE.TextureLoader();
 
-// Preload all fish textures (both directions, alive and dead)
-export function preloadFishTextures(fishType: string = 'clownfish'): Promise<void> {
+// All available fish types to preload
+const FISH_TYPES_TO_PRELOAD: FishTypeKey[] = ['clownfish', 'glowfish'];
+
+// Preload textures for a single fish type
+function preloadFishTypeTextures(fishType: string): Promise<void>[] {
   const stages = ['baby', 'juvenile', 'adult', 'elder'];
   const directions = ['', '-left']; // '' for right, '-left' for left
   const states = ['', '-dead']; // '' for alive, '-dead' for dead
@@ -51,6 +55,47 @@ export function preloadFishTextures(fishType: string = 'clownfish'): Promise<voi
     }
   }
   
+  return promises;
+}
+
+// Preload all fish textures for all fish types (both directions, alive and dead)
+export function preloadFishTextures(): Promise<void> {
+  const allPromises: Promise<void>[] = [];
+  
+  for (const fishType of FISH_TYPES_TO_PRELOAD) {
+    allPromises.push(...preloadFishTypeTextures(fishType));
+  }
+  
+  return Promise.all(allPromises).then(() => undefined);
+}
+
+// Preload shark textures
+export function preloadSharkTextures(): Promise<void> {
+  const directions = ['', '-left'];
+  const promises: Promise<void>[] = [];
+  
+  for (const dir of directions) {
+    const key = `shark:shark${dir}`;
+    const path = `/assets/fish/shark/shark${dir}.svg`;
+    
+    promises.push(
+      new Promise<void>((resolve) => {
+        textureLoader.load(
+          path,
+          (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            textureCache.set(key, texture);
+            resolve();
+          },
+          undefined,
+          () => {
+            resolve();
+          }
+        );
+      })
+    );
+  }
+  
   return Promise.all(promises).then(() => undefined);
 }
 
@@ -62,6 +107,12 @@ function getTexture(stage: string, facingLeft: boolean, fishType: string = 'clow
   } else {
     key = facingLeft ? `${fishType}:${stage}-left` : `${fishType}:${stage}`;
   }
+  return textureCache.get(key) ?? null;
+}
+
+// Get shark texture
+export function getSharkTexture(facingLeft: boolean): THREE.Texture | null {
+  const key = facingLeft ? 'shark:shark-left' : 'shark:shark';
   return textureCache.get(key) ?? null;
 }
 

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 120">
+  <defs>
+    <linearGradient id="shark-body-l" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a5568;stop-opacity:1"/>
+      <stop offset="40%" style="stop-color:#2d3748;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1a202c;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="shark-belly-l" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e8f0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#cbd5e0;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="shark-shadow-l" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Main body (mirrored) -->
+  <path d="M240 60 Q220 30 140 35 Q80 38 40 55 L20 60 L40 65 Q80 82 140 85 Q220 90 240 60 Z" 
+        fill="url(#shark-body-l)" filter="url(#shark-shadow-l)"/>
+  
+  <!-- Belly - white underbelly -->
+  <path d="M225 68 Q200 85 140 82 Q100 80 60 68 Q100 75 140 77 Q190 78 225 68 Z" 
+        fill="url(#shark-belly-l)"/>
+  
+  <!-- Dorsal fin - iconic shark fin -->
+  <path d="M160 35 L145 5 L125 35" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+  <path d="M145 5 L140 20 L145 35" fill="#4a5568" opacity="0.5"/>
+  
+  <!-- Tail fin -->
+  <path d="M240 60 L270 30 L255 55 L270 60 L255 65 L270 90 L240 60" fill="#2d3748"/>
+  <path d="M255 55 L262 45 L255 60" fill="#4a5568" opacity="0.4"/>
+  
+  <!-- Pectoral fin -->
+  <path d="M180 75 L195 100 L160 85" fill="#3d4a5c" opacity="0.9"/>
+  
+  <!-- Second dorsal fin (smaller) -->
+  <path d="M95 42 L88 28 L80 42" fill="#3d4a5c"/>
+  
+  <!-- Anal fin -->
+  <path d="M105 78 L100 92 L90 78" fill="#3d4a5c" opacity="0.85"/>
+  
+  <!-- Gills -->
+  <line x1="185" y1="52" x2="185" y2="68" stroke="#1a202c" stroke-width="2" opacity="0.6"/>
+  <line x1="175" y1="50" x2="175" y2="70" stroke="#1a202c" stroke-width="2" opacity="0.6"/>
+  <line x1="165" y1="48" x2="165" y2="70" stroke="#1a202c" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Eye - menacing -->
+  <circle cx="208" cy="52" r="10" fill="#1a202c"/>
+  <circle cx="208" cy="52" r="7" fill="#2d3748"/>
+  <circle cx="208" cy="52" r="4" fill="#000000"/>
+  <circle cx="210" cy="50" r="2" fill="#ffffff" opacity="0.6"/>
+  
+  <!-- Snout -->
+  <ellipse cx="28" cy="60" rx="12" ry="8" fill="#3d4a5c"/>
+  
+  <!-- Mouth with teeth -->
+  <path d="M50 62 Q35 68 20 62" stroke="#1a202c" stroke-width="2" fill="none"/>
+  
+  <!-- Teeth - top row -->
+  <polygon points="45,62 43,68 41,62" fill="#ffffff"/>
+  <polygon points="37,61 35,68 33,61" fill="#ffffff"/>
+  <polygon points="29,61 27,67 25,61" fill="#ffffff"/>
+  
+  <!-- Teeth - bottom row -->
+  <polygon points="42,68 40,62 38,68" fill="#f0f0f0"/>
+  <polygon points="34,68 32,62 30,68" fill="#f0f0f0"/>
+  
+  <!-- Scars/texture -->
+  <line x1="120" y1="45" x2="105" y2="50" stroke="#1a202c" stroke-width="1" opacity="0.3"/>
+  <line x1="135" y1="70" x2="120" y2="72" stroke="#1a202c" stroke-width="1" opacity="0.25"/>
+</svg>

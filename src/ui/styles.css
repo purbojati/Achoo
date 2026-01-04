@@ -190,9 +190,130 @@
   background: #4ade80;
 }
 
-.buy-fish-btn {
-  padding: 12px 25px;
-  font-size: 16px;
+/* Fish Type Buttons */
+.buy-fish-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-fish {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 12px;
+  min-width: 90px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  color: white;
+}
+
+.btn-fish:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: #60a5fa;
+}
+
+.btn-fish .fish-icon {
+  width: 36px;
+  height: 24px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+}
+
+.btn-fish .fish-icon.clownfish {
+  background: linear-gradient(135deg, #ff6b00, #ff9955);
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.5);
+}
+
+.btn-fish .fish-icon.glowfish {
+  background: linear-gradient(135deg, #00ffff, #00aaaa);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.btn-fish .fish-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.btn-fish .fish-cost {
+  color: #fbbf24;
+  font-size: 11px;
+}
+
+/* Shark Warning */
+.shark-warning {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 16px;
+  font-size: 28px;
+  font-weight: 900;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  z-index: 200;
+}
+
+.shark-warning.hidden {
+  display: none;
+}
+
+.shark-warning.shake {
+  animation: shark-shake 0.5s ease-in-out infinite;
+}
+
+.shark-warning .shark-icon {
+  font-size: 40px;
+  animation: shark-swim 1s ease-in-out infinite;
+}
+
+@keyframes shark-shake {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  25% {
+    transform: translate(-48%, -52%) rotate(-2deg);
+  }
+  75% {
+    transform: translate(-52%, -48%) rotate(2deg);
+  }
+}
+
+@keyframes shark-swim {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+  }
+}
+
+/* Shark stat in game over */
+.shark-stat {
+  color: #ef4444;
+}
+
+.shark-stat .stat-value {
+  color: #ef4444;
 }
 
 /* Game Over Screen */

@@ -1,10 +1,11 @@
-import { GAME_CONFIG } from '../config/gameConfig';
+import { GAME_CONFIG, FishTypeKey, FISH_TYPES } from '../config/gameConfig';
 
 export interface GameStats {
   totalFishRaised: number;
   totalEggsCollected: number;
   maxPointsReached: number;
   fishDied: number;
+  fishEatenByShark: number;
 }
 
 export class GameManager {
@@ -25,6 +26,7 @@ export class GameManager {
       totalEggsCollected: 0,
       maxPointsReached: this._points,
       fishDied: 0,
+      fishEatenByShark: 0,
     };
   }
 
@@ -56,8 +58,13 @@ export class GameManager {
     return this.canAfford(GAME_CONFIG.feedCost);
   }
 
-  canAffordFish(): boolean {
-    return this.canAfford(GAME_CONFIG.babyFishCost) && this._fishCount < GAME_CONFIG.maxFish;
+  canAffordFish(fishType: FishTypeKey = 'clownfish'): boolean {
+    const cost = FISH_TYPES[fishType].cost;
+    return this.canAfford(cost) && this._fishCount < GAME_CONFIG.maxFish;
+  }
+
+  getFishCost(fishType: FishTypeKey): number {
+    return FISH_TYPES[fishType].cost;
   }
 
   // Fish management
@@ -84,10 +91,13 @@ export class GameManager {
     return false;
   }
 
-  removeFish(): void {
+  removeFish(eatenByShark: boolean = false): void {
     if (this._fishCount > 0) {
       this._fishCount--;
       this.stats.fishDied++;
+      if (eatenByShark) {
+        this.stats.fishEatenByShark++;
+      }
       this.notifyFishCountChanged();
 
       // Check for game over
@@ -109,19 +119,21 @@ export class GameManager {
     return false;
   }
 
-  purchaseFish(): boolean {
-    if (!this.canAffordFish()) {
+  purchaseFish(fishType: FishTypeKey = 'clownfish'): boolean {
+    const cost = FISH_TYPES[fishType].cost;
+    
+    if (!this.canAffordFish(fishType)) {
       if (this._fishCount >= GAME_CONFIG.maxFish) {
         // Tank is full
         return false;
       }
       if (this.onInsufficientFunds) {
-        this.onInsufficientFunds(GAME_CONFIG.babyFishCost, this._points);
+        this.onInsufficientFunds(cost, this._points);
       }
       return false;
     }
 
-    this.spendPoints(GAME_CONFIG.babyFishCost);
+    this.spendPoints(cost);
     this.addFish();
     return true;
   }
@@ -181,6 +193,7 @@ export class GameManager {
       totalEggsCollected: 0,
       maxPointsReached: this._points,
       fishDied: 0,
+      fishEatenByShark: 0,
     };
     this.notifyPointsChanged();
     this.notifyFishCountChanged();

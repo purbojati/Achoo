@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="glow-adult-l" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="body-adult-l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1"/>
+      <stop offset="35%" style="stop-color:#00eeee;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#00aaaa;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="belly-glow-adult-l" cx="50%" cy="70%" r="55%">
+      <stop offset="0%" style="stop-color:#aaffff;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0.4"/>
+    </radialGradient>
+    <linearGradient id="fin-gradient-l" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffee;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#00bbaa;stop-opacity:0.8"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer glow aura -->
+  <ellipse cx="100" cy="60" rx="60" ry="35" fill="#00ffff" opacity="0.2" filter="url(#glow-adult-l)"/>
+  
+  <!-- Main body -->
+  <ellipse cx="100" cy="60" rx="55" ry="32" fill="url(#body-adult-l)" filter="url(#glow-adult-l)"/>
+  
+  <!-- Belly glow -->
+  <ellipse cx="100" cy="72" rx="40" ry="18" fill="url(#belly-glow-adult-l)"/>
+  
+  <!-- Elegant stripe patterns -->
+  <path d="M140 42 Q100 28 60 42" stroke="#00ffcc" stroke-width="4" fill="none" opacity="0.7"/>
+  <path d="M135 60 Q100 50 65 60" stroke="#00ffdd" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M130 78 Q100 90 70 78" stroke="#00ffcc" stroke-width="3" fill="none" opacity="0.6"/>
+  
+  <!-- Bioluminescent spots - more prominent -->
+  <circle cx="130" cy="52" r="5" fill="#99ffff" opacity="0.95" filter="url(#glow-adult-l)"/>
+  <circle cx="110" cy="42" r="4" fill="#bbffff" opacity="0.9"/>
+  <circle cx="90" cy="45" r="4.5" fill="#99ffff" opacity="0.92"/>
+  <circle cx="70" cy="55" r="3.5" fill="#aaffff" opacity="0.88"/>
+  <circle cx="80" cy="70" r="3" fill="#bbffff" opacity="0.85"/>
+  
+  <!-- Majestic dorsal fin -->
+  <path d="M125 25 Q110 5 95 15 Q85 8 70 25 Q100 35 125 25" fill="url(#fin-gradient-l)" filter="url(#glow-adult-l)"/>
+  
+  <!-- Flowing tail fin -->
+  <path d="M48 60 L15 30 L10 60 L15 90 Z" fill="#00ddcc" opacity="0.92" filter="url(#glow-adult-l)"/>
+  <path d="M40 60 L25 45 L22 60 L25 75 Z" fill="#00ffee" opacity="0.6"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="125" cy="75" rx="18" ry="12" fill="#00ccbb" opacity="0.8" transform="rotate(30 125 75)"/>
+  
+  <!-- Ventral fin -->
+  <path d="M110 90 L100 110 L90 90" fill="#00bbaa" opacity="0.75"/>
+  
+  <!-- Eye with glow -->
+  <circle cx="145" cy="52" r="14" fill="#002233" filter="url(#glow-adult-l)"/>
+  <circle cx="145" cy="52" r="11" fill="#113344"/>
+  <circle cx="147" cy="49" r="6" fill="#00ffff"/>
+  <circle cx="150" cy="46" r="3" fill="#ffffff"/>
+  
+  <!-- Elegant mouth -->
+  <path d="M162 58 Q170 63 162 68" stroke="#008888" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

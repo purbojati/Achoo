@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { createFishModel, animateFish, setFishDirection, setFishPoisonedEffect, swapToDeadSprite } from '../models/FishModel';
-import { GAME_CONFIG, TANK_BOUNDS, getFishStage, FishStage, FISH_STAGES } from '../config/gameConfig';
+import { GAME_CONFIG, TANK_BOUNDS, getFishStage, FishStage, FISH_STAGES, FishTypeKey, FISH_TYPES } from '../config/gameConfig';
 
 export class Fish3D {
   private group: THREE.Group;
   private fishModel: THREE.Group;
   private time: number = 0;
+
+  // Fish type
+  private _fishType: FishTypeKey;
 
   // Size and growth
   private _size: number = 0.3;
@@ -63,17 +66,21 @@ export class Fish3D {
   private onEggProduced?: (x: number, y: number, z: number, value: number) => void;
   private onDeath?: () => void;
 
-  constructor(x: number, y: number, z: number) {
+  constructor(x: number, y: number, z: number, fishType: FishTypeKey = 'clownfish') {
     this.group = new THREE.Group();
     this.group.position.set(x, y, z);
+
+    this._fishType = fishType;
+    const fishTypeConfig = FISH_TYPES[fishType];
 
     this._size = 0.3;
     this.targetSize = 0.3;
     this.currentStage = getFishStage(this._size);
 
     // === Generate unique personality for this fish ===
+    // Apply fish type speed multiplier to base personality
     this.personality = {
-      speedMultiplier: 0.7 + Math.random() * 0.6,        // 0.7 - 1.3
+      speedMultiplier: (0.7 + Math.random() * 0.6) * fishTypeConfig.speedMultiplier,        // 0.7 - 1.3 * type multiplier
       turnSpeedMultiplier: 0.6 + Math.random() * 0.8,   // 0.6 - 1.4
       wanderFrequency: 0.5 + Math.random() * 1.0,       // 0.5 - 1.5
       waveAmplitude: 0.1 + Math.random() * 0.15,        // 0.1 - 0.25
@@ -94,6 +101,7 @@ export class Fish3D {
     this.fishModel = createFishModel({
       stage: this.currentStage.stageKey,
       scale: this._size,
+      fishType: this._fishType,
     });
     this.group.add(this.fishModel);
 
@@ -114,6 +122,10 @@ export class Fish3D {
     // Initialize lifespan with some randomness (80% - 120% of base)
     const lifespanVariation = 0.8 + Math.random() * 0.4;
     this.lifespan = GAME_CONFIG.fishBaseLifespan * this.currentStage.lifespanMultiplier * lifespanVariation;
+  }
+
+  public getFishType(): FishTypeKey {
+    return this._fishType;
   }
 
   public setFoodPositions(positions: THREE.Vector3[]): void {
@@ -437,10 +449,12 @@ export class Fish3D {
     if (!this.onEggProduced) return;
 
     const stage = getFishStage(this._size);
+    const fishTypeConfig = FISH_TYPES[this._fishType];
     const baseValue = GAME_CONFIG.eggBaseValue;
     const sizeBonus = Math.floor(this._size * 10);
-    const multiplier = stage.eggMultiplier;
-    const eggValue = (baseValue + sizeBonus) * multiplier;
+    const stageMultiplier = stage.eggMultiplier;
+    const typeMultiplier = fishTypeConfig.eggValueMultiplier;
+    const eggValue = Math.floor((baseValue + sizeBonus) * stageMultiplier * typeMultiplier);
 
     // Spawn egg behind the fish based on current facing angle
     const behindAngle = this.currentAngle + Math.PI;
@@ -512,6 +526,7 @@ export class Fish3D {
       this.fishModel = createFishModel({
         stage: newStage.stageKey,
         scale: this._size,
+        fishType: this._fishType,
       });
       this.group.add(this.fishModel);
       
@@ -538,7 +553,7 @@ export class Fish3D {
 
     // === Phase 1: Swap to dead sprite immediately ===
     // This shows the X eyes and poisoned color from the SVG
-    swapToDeadSprite(this.fishModel, this.currentStage.stageKey, 'clownfish');
+    swapToDeadSprite(this.fishModel, this.currentStage.stageKey, this._fishType);
 
     // === Phase 2: Flip upside down (0 - 0.5) ===
     // Smooth rotation to belly-up position

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120">
+  <defs>
+    <filter id="dim-glow-baby-l" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="dead-body-baby-l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#668877;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#557766;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#445544;stop-opacity:0.9"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Dimmed outer glow -->
+  <ellipse cx="100" cy="60" rx="50" ry="30" fill="#446655" opacity="0.1" filter="url(#dim-glow-baby-l)"/>
+  
+  <!-- Main body - sickly green-gray -->
+  <ellipse cx="100" cy="60" rx="45" ry="28" fill="url(#dead-body-baby-l)"/>
+  
+  <!-- Faded spots -->
+  <circle cx="120" cy="55" r="3" fill="#557766" opacity="0.4"/>
+  <circle cx="105" cy="48" r="2" fill="#668877" opacity="0.3"/>
+  <circle cx="85" cy="52" r="2.5" fill="#557766" opacity="0.35"/>
+  
+  <!-- Dorsal fin - wilted -->
+  <path d="M115 35 Q100 28 85 35 Q100 40 115 35" fill="#556655" opacity="0.6"/>
+  
+  <!-- Tail fin - droopy -->
+  <path d="M55 60 L32 45 L28 60 L32 78 Z" fill="#556655" opacity="0.65"/>
+  
+  <!-- Pectoral fin -->
+  <ellipse cx="115" cy="70" rx="12" ry="8" fill="#556655" opacity="0.5" transform="rotate(20 115 70)"/>
+  
+  <!-- X Eyes -->
+  <circle cx="135" cy="55" r="10" fill="#334433"/>
+  <line x1="130" y1="50" x2="140" y2="60" stroke="#88aa88" stroke-width="3" stroke-linecap="round"/>
+  <line x1="140" y1="50" x2="130" y2="60" stroke="#88aa88" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Tongue sticking out -->
+  <ellipse cx="155" cy="68" rx="6" ry="4" fill="#aa7788" opacity="0.8"/>
+  
+  <!-- Dizzy swirl -->
+  <path d="M125 35 Q120 30 115 35 Q120 40 125 35" stroke="#77aa88" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <circle cx="120" cy="32" r="2" fill="#77aa88" opacity="0.5"/>
+</svg>
